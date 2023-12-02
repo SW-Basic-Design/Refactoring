@@ -1,4 +1,4 @@
-#include "NonPlayerCharacter.h"
+#include "NonPlayerCharacter.hpp"
 
 NonPlayerCharacter::NonPlayerCharacter() :Character() 
 {

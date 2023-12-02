@@ -15,55 +15,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FrameManager.h">
+    <ClInclude Include="FrameManager.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
+    <ClInclude Include="GameManager.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="Game.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="includes.h">
+    <ClInclude Include="includes.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyNPC.h">
+    <ClInclude Include="EnemyNPC.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="FriendlyNPC.h">
+    <ClInclude Include="FriendlyNPC.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="NonPlayerCharacter.h">
+    <ClInclude Include="NonPlayerCharacter.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCharacter.h">
+    <ClInclude Include="PlayerCharacter.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
+    <ClInclude Include="Character.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DroppedItem.h">
+    <ClInclude Include="DroppedItem.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DroppedSpecialItem.h">
+    <ClInclude Include="DroppedSpecialItem.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DroppedWeapon.h">
+    <ClInclude Include="DroppedWeapon.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="Object.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.h">
+    <ClInclude Include="Particle.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Wall.h">
+    <ClInclude Include="Wall.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Vec2.h">
+    <ClInclude Include="Vec2.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Frame.h">
+    <ClInclude Include="Frame.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -113,10 +113,10 @@
     <ClCompile Include="Wall.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Vec2.cpp">
+    <ClCompile Include="Frame.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Frame.cpp">
+    <ClCompile Include="Vec2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

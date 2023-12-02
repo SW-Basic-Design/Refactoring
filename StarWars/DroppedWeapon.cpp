@@ -1,4 +1,4 @@
-#include "DroppedWeapon.h"
+#include "DroppedWeapon.hpp"
 
 DroppedWeapon::DroppedWeapon() : DroppedWeapon(0)
 {
@@ -125,6 +125,7 @@ int DroppedWeapon::getRPM(int weapon_id)
 
 int DroppedWeapon::getMaxRange(int weapon_id)
 {
+	return 1000;
 	switch (weapon_id)
 	{
 	case 1://pistol

@@ -1,4 +1,4 @@
-#include "EnemyNPC.h"
+#include "EnemyNPC.hpp"
 
 EnemyNPC::EnemyNPC() : NonPlayerCharacter() 
 {

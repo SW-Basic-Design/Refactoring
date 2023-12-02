@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Frame.h"
-#include "Object.h"
-#include "PlayerCharacter.h"
+#include "Frame.hpp"
+#include "Object.hpp"
+#include "PlayerCharacter.hpp"
+#include "Particle.hpp"
+#include <string>
 
 #ifndef FRAME_MANAGER_HPP
 #define FRAME_MANAGER_HPP
@@ -23,6 +25,7 @@ public:
 	void drawStatus(Character* player1, Character* player2);
 private:
 	Frame frame;
+	int i = 0;
 };
 
 #endif

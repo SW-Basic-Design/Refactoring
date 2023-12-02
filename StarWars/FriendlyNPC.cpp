@@ -1,4 +1,4 @@
-#include "FriendlyNPC.h"
+#include "FriendlyNPC.hpp"
 
 FriendlyNPC::FriendlyNPC() : NonPlayerCharacter() 
 {

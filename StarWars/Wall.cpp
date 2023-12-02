@@ -1,9 +1,8 @@
-#include "Wall.h"
+#include "Wall.hpp"
 
 Wall::Wall() :Object() 
 {
 	this->object_type = ObjectType::WALL;
-	this->size = { 1, 1 };
 
 	this->health = 50;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NonPlayerCharacter.h"
+#include "NonPlayerCharacter.hpp"
 
 #ifndef ENEMY_NPC_HPP
 #define ENEMY_NPC_HPP

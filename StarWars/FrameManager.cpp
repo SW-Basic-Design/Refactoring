@@ -1,6 +1,4 @@
-#include "FrameManager.h"
-#include <string>
-#include "Particle.h"
+#include "FrameManager.hpp"
 
 void FrameManager::InitFrame()
 {
@@ -114,12 +112,6 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 	Print("¡à");
 
-	SetCursorPosition({ (short)((objects[0])->GetCoord().getX() * 2), (short)(20 - (objects[0])->GetCoord().getY() - 1) });
-	if (((PlayerCharacter*)objects[0])->direction.getX() >= 0)
-		Print("¢Ä");
-	else if (((PlayerCharacter*)objects[0])->direction.getX() < 0)
-		Print("¢Å");
-
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
 	
 	if (((PlayerCharacter*)objects[1])->isFreeze == true)
@@ -128,12 +120,6 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
 	
 	Print("¡à");
-
-	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY() - 1) });
-	if (((PlayerCharacter*)objects[1])->direction.getX() >= 0)
-		Print("¢Ä");
-	else if (((PlayerCharacter*)objects[1])->direction.getX() < 0)
-		Print("¢Å");
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
@@ -272,5 +258,8 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	SetCursorPosition({ 52, 26 });
 	Print("»óÅÂ : ");
 	Print(player2->getBuffName().c_str());
-	
+
+
+	SetCursorPosition({ 52, 27 });
+	Print(std::to_string(i++).c_str());
 }

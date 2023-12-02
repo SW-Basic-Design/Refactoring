@@ -1,137 +1,84 @@
-#include "Vec2.h"
+#include "Vec2.hpp"
 
-template <typename Elem>
-template <typename T>
-Vec2<Elem>::Vec2(const Vec2<T>& o)
-{
-	x = static_cast<Elem>(o.x);
-	y = static_cast<Elem>(o.y);
-}
 
-template <typename Elem>
-Vec2<Elem>::Vec2(Elem v) : x(v), y(v) {}
+Vec2::Vec2(const int v) : x(v), y(v) {}
 
-template <typename Elem>
-Vec2<Elem>::Vec2(Elem x, Elem y) : x(x), y(y) {}
+Vec2::Vec2(const int x, const int y) : x(x), y(y) {}
 
-template <typename Elem>
-Vec2<Elem> Vec2<Elem>::operator+(const Vec2<Elem>& rhs) const
+Vec2 Vec2::operator+(const Vec2& rhs) const
 {
 	return { x + rhs.x, y + rhs.y };
 }
 
-template <typename Elem>
-Vec2<Elem> Vec2<Elem>::operator-(const Vec2<Elem>& rhs) const
+Vec2 Vec2::operator-(const Vec2& rhs) const
 {
 	return { x - rhs.x, y - rhs.y };
 }
 
-template <typename Elem>
-Vec2<Elem> Vec2<Elem>::operator*(const Vec2<Elem>& rhs) const
+Vec2 Vec2::operator*(const Vec2& rhs) const
 {
 	return { x * rhs.x, y * rhs.y };
 }
 
-template <typename Elem>
-Vec2<Elem> Vec2<Elem>::operator/(const Vec2<Elem>& rhs) const
+Vec2 Vec2::operator/(const Vec2& rhs) const
 {
 	return { x / rhs.x, y / rhs.y };
 }
 
-template <typename Elem>
-Vec2<Elem>& Vec2<Elem>::operator+=(const Vec2<Elem>& rhs)
+Vec2& Vec2::operator+=(const Vec2& rhs)
 {
 	x += rhs.x;
 	y += rhs.y;
 	return *this;
 }
 
-template <typename Elem>
-Vec2<Elem>& Vec2<Elem>::operator-=(const Vec2<Elem>& rhs)
+Vec2& Vec2::operator-=(const Vec2& rhs)
 {
 	x -= rhs.x;
 	y -= rhs.y;
 	return *this;
 }
 
-template <typename Elem>
-Vec2<Elem>& Vec2<Elem>::operator*=(const Vec2<Elem>& rhs)
+Vec2& Vec2::operator*=(const Vec2& rhs)
 {
 	x *= rhs.x;
 	y *= rhs.y;
 	return *this;
 }
 
-template <typename Elem>
-Vec2<Elem>& Vec2<Elem>::operator/=(const Vec2<Elem>& rhs)
+Vec2& Vec2::operator/=(const Vec2& rhs)
 {
 	x /= rhs.x;
 	y /= rhs.y;
 	return *this;
 }
 
-template <typename Elem>
-bool Vec2<Elem>::operator==(const Vec2<Elem>& rhs) const
+bool Vec2::operator==(const Vec2& rhs) const
 {
 	return x == rhs.x && y == rhs.y;
 }
 
-template <typename Elem>
-bool Vec2<Elem>::operator!=(const Vec2<Elem>& rhs) const
+bool Vec2::operator!=(const Vec2& rhs) const
 {
 	return x != rhs.x || y != rhs.y;
 }
 
-template <typename Elem>
-Elem Vec2<Elem>::dot(const Vec2<Elem>& rhs) const
-{
-	return x * rhs.x + y * rhs.y;
-}
-
-template <typename Elem>
-Elem Vec2<Elem>::cross(const Vec2<Elem>& rhs) const
-{
-	return x * rhs.y - y * rhs.x;
-}
-
-template <typename Elem>
-Elem Vec2<Elem>::norm() const
-{
-	return hypot(x, y);
-}
-
-template <typename Elem>
-void Vec2<Elem>::normalize()
-{
-	*this /= norm();
-}
-
-template <typename Elem>
-Elem Vec2<Elem>::area() const
-{
-	return x * y;
-}
-
-template <typename Elem>
-void Vec2<Elem>::setX(Elem x)
+void Vec2::setX(int x)
 {
 	this->x = x;
 }
 
-template <typename Elem>
-void Vec2<Elem>::setY(Elem y)
+void Vec2::setY(int y)
 {
 	this->y = y;
 }
 
-template <typename Elem>
-Elem Vec2<Elem>::getX()
+int Vec2::getX()
 {
 	return this->x;
 }
 
-template <typename Elem>
-Elem Vec2<Elem>::getY()
+int Vec2::getY()
 {
 	return this->y;
 }

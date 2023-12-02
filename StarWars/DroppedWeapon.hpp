@@ -1,12 +1,12 @@
 #pragma once
 
-#include "DroppedItem.h"
-#include "Character.h"
+#include "DroppedItem.hpp"
+#include "Character.hpp"
 
 #ifndef DROPPED_WEAPON_HPP
 #define DROPPED_WEAPON_HPP
 
-class DroppedWeapon : DroppedItem {
+class DroppedWeapon : public DroppedItem {
 public:
 	DroppedWeapon();
 	DroppedWeapon(int w_id);

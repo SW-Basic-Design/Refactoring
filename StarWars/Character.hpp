@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Object.h"
-#include "DroppedWeapon.h"
-
+#include "Object.hpp"
+#include "DroppedWeapon.hpp"
 
 #ifndef CHARACTER_HPP
 #define CHARACTER_HPP
@@ -31,6 +30,7 @@ public:
 	int bullet_count;
 	long long last_shot;
 	int current_buff;
+	int buff_start;
 	std::string getWeaponName();
 	std::string getBuffName();
 protected:

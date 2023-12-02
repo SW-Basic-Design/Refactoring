@@ -1,17 +1,14 @@
-#include "Character.h"
-
+#include "Character.hpp"
 
 Character::Character() : Object() 
 {
-	this->object_type = ObjectType::CHARACTER;
-	this->size = { 1, 2 };
-	
+	this->object_type = ObjectType::CHARACTER;	
 	this->weapon_id = 0;
 	this->isFreeze = false;
 	this->health = 100;
 	this->buff_timer = 0;
 	this->speed = 1;
-	this->direction = { 0, 0 };
+	this->direction = Vec2{ 0, 0 };
 	this->bullet_count = 0;
 	this->last_shot = 0;
 	this->current_buff = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Character.h"
+#include "Character.hpp"
 
 #ifndef PLAYER_CHARACTER_HPP
 #define PLAYER_CHARACTER_HPP

@@ -1,7 +1,8 @@
-#include "DroppedItem.h"
+#include "DroppedItem.hpp"
 
 DroppedItem::DroppedItem() : Object() 
 {
 	this->object_type = ObjectType::DROPPED_ITEM;
-	this->size = { 1, 1 };
+
+	this->speed = 1000;
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "DroppedItem.h"
-#include "Character.h"
-#include "GameManager.h"
+#include "DroppedItem.hpp"
+#include "Character.hpp"
+#include "GameManager.hpp"
 
 #ifndef DROPPED_SPECIAL_ITEM_HPP
 #define DROPPED_SPECIAL_ITEM_HPP

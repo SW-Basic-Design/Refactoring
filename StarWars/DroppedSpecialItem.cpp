@@ -1,4 +1,4 @@
-#include "DroppedSpecialItem.h"
+#include "DroppedSpecialItem.hpp"
 
 DroppedSpecialItem::DroppedSpecialItem() : DroppedSpecialItem(0)
 {
@@ -18,6 +18,8 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 	Character* player = static_cast<Character*>(user_1);
 	Character* opponent = static_cast<Character*>(user_2);
 
+	auto milli = GetTickCount64();
+
 	switch (special_item_id) 
 	{
 	case 0:
@@ -25,19 +27,21 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 1:
-		player->setBuffTimer(200);
+		player->setBuffTimer(2000);
 		player->SetSpeed(30);
 		player->current_buff = 1;
+		player->buff_start = milli;
 		break;
 	
 	case 2:
-		opponent->setBuffTimer(100);
+		opponent->setBuffTimer(2000);
 		opponent->isFreeze = true;
 		opponent->current_buff = 2;
+		opponent->buff_start = milli;
 		break;
 
 	case 3:
-		random_device rd;
+		/*random_device rd;
 		mt19937 gen(rd());
 		uniform_int_distribution<> dist(1, 20);
 
@@ -50,8 +54,8 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			bullet->setDamage(5);
 			bullet->max_range = 50;
 			bullet->SetCoord({ dist(gen), 19});
-			bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 1, -1 });
-			bullet->SetVelocity(Vec2{ 1, -1 });
+			bullet->SetNextCoord(bullet->GetCoord() + Vec2<int>{ 1, -1 });
+			bullet->SetVelocity(Vec2<int>{ 1.0, -1.0 });
 
 			objects.push_back(bullet);
 		}
@@ -69,7 +73,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			p->SetVelocity(Vec2{ -1, -1 });
 
 			objects.push_back(p);
-		}
+		}*/
 		break;
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.h"
+#include "Object.hpp"
 
 #ifndef WALL_HPP
 #define WALL_HPP

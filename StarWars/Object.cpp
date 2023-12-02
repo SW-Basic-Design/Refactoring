@@ -1,42 +1,27 @@
-#include "Object.h"
+#include "Object.hpp"
 
-Object::Object() : Object({ 0, 0 }, { 0, 0 }, { 0,0 }, 1) {}
+Object::Object() : Object(Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0,0 }, 1) {}
 
-Object::Object(Vec2<double> coord, Vec2<double> nextCoord, Vec2<double> velocity, int speed) : coord(coord), velocity(velocity), speed(speed)
+Object::Object(Vec2 coord, Vec2 nextCoord, Vec2 velocity, int speed) : coord(coord), velocity(velocity), speed(speed)
 {
 	this->object_type = ObjectType::OBJECT;
-	this->size = { 1, 1 };
 
 	this->nextCoord = coord;
 }
 
-Vec2<double>& Object::GetCoord()
+Vec2& Object::GetCoord()
 {
 	return coord;
 }
 
-Vec2<int> Object::GetCoordAsInt()
-{
-	Vec2<int> int_vector = coord;
-
-	return int_vector;
-}
-
-Vec2<double>& Object::GetVelocity()
+Vec2& Object::GetVelocity()
 {
 	return velocity;
 }
 
-Vec2<double>& Object::GetNextCoord()
+Vec2& Object::GetNextCoord()
 {
 	return nextCoord;
-}
-
-Vec2<int> Object::GetNextCoordAsInt()
-{
-	Vec2<int> int_vector = nextCoord;
-
-	return int_vector;
 }
 
 int Object::GetSpeed()
@@ -49,17 +34,17 @@ ObjectType Object::GetObjectType()
 	return object_type;
 }
 
-void Object::SetVelocity(const Vec2<double>& velocity)
+void Object::SetVelocity(const Vec2& velocity)
 {
 	this->velocity = velocity;
 }
 
-void Object::SetNextCoord(const Vec2<double>& nextCoord)
+void Object::SetNextCoord(const Vec2& nextCoord)
 {
 	this->nextCoord = nextCoord;
 }
 
-void Object::SetCoord(const Vec2<double>& coord)
+void Object::SetCoord(const Vec2& coord)
 {
 	this->coord = coord;
 }
@@ -106,32 +91,18 @@ int Object::GetCollisionPriority()
 
 bool Object::IsCollisionWith(Object* obj)
 {
-	Vec2<int> object1_size = size;
-	Vec2<int> object2_size = obj->size;
+	Vec2 current = GetCoord();
+	Vec2 next = GetNextCoord();
 
-	Vec2<int> current = GetCoordAsInt();
-	Vec2<int> next = GetCoordAsInt();
+	Vec2 obj_current = obj->GetCoord();
+	Vec2 obj_next = obj->GetNextCoord();
 
-	Vec2<int> obj_current = obj->GetCoordAsInt();
-	Vec2<int> obj_next = obj->GetNextCoordAsInt();
+	
+	if (next == obj_next || current == obj_current || next == obj_current || current == obj_next)
+		return true;
 
-	for (int i = 0; i < object1_size.getX(); ++i)
-	{
-		for (int j = 0; j < object1_size.getY(); ++j)
-		{
-			if (next + Vec2<int>{ i, j } == obj->nextCoord || current + Vec2<int>{ i, j } == obj_current)
-				return true;
-		}
-	}
-
-	for (int i = 0; i < object2_size.getX(); ++i)
-	{
-		for (int j = 0; j < object2_size.getY(); ++j)
-		{
-			if (next == obj_next + Vec2<int>{ i, j } || current == obj_current + Vec2<int>{ i, j })
-				return true;
-			}
-	}
-
+	if (next == obj_next || current == obj_current || current == obj_next || next == obj_current)
+		return true;
+	
 	return false;
 }

@@ -128,23 +128,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Character.h" />
-    <ClInclude Include="DroppedItem.h" />
-    <ClInclude Include="DroppedSpecialItem.h" />
-    <ClInclude Include="DroppedWeapon.h" />
-    <ClInclude Include="EnemyNPC.h" />
-    <ClInclude Include="Frame.h" />
-    <ClInclude Include="FrameManager.h" />
-    <ClInclude Include="FriendlyNPC.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="includes.h" />
-    <ClInclude Include="NonPlayerCharacter.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="PlayerCharacter.h" />
-    <ClInclude Include="Vec2.h" />
-    <ClInclude Include="Wall.h" />
+    <ClInclude Include="Character.hpp" />
+    <ClInclude Include="DroppedItem.hpp" />
+    <ClInclude Include="DroppedSpecialItem.hpp" />
+    <ClInclude Include="DroppedWeapon.hpp" />
+    <ClInclude Include="EnemyNPC.hpp" />
+    <ClInclude Include="Frame.hpp" />
+    <ClInclude Include="FrameManager.hpp" />
+    <ClInclude Include="FriendlyNPC.hpp" />
+    <ClInclude Include="Game.hpp" />
+    <ClInclude Include="GameManager.hpp" />
+    <ClInclude Include="includes.hpp" />
+    <ClInclude Include="NonPlayerCharacter.hpp" />
+    <ClInclude Include="Object.hpp" />
+    <ClInclude Include="Particle.hpp" />
+    <ClInclude Include="PlayerCharacter.hpp" />
+    <ClInclude Include="Vec2.hpp" />
+    <ClInclude Include="Wall.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp" />

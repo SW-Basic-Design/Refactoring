@@ -169,7 +169,7 @@ void Game::UpdateSingleObjectNextPosition(Object* object)
 void Game::UpdateObjects()
 {
 	auto milli = GetTickCount64();
-	
+
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
 		if ((*it)->last_updated + (1000.0 / (*it)->GetSpeed()) > milli)
@@ -178,6 +178,13 @@ void Game::UpdateObjects()
 		(*it)->last_updated = milli;
 
 		UpdateSingleObjectNextPosition(*it);
+
+		//플레이어 2가 Ai인 경우 연산
+		if ((*it) == objects[1])
+		{
+			getShortestWay((*it), objects[0]);
+		}
+		
 
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 			continue;
@@ -413,4 +420,65 @@ void Game::PlayerShoot(PlayerCharacter* player)
 	{
 		player->setWeapon(0);
 	}
+}
+
+int Game::shortestPathBinaryMatrix(Vec2 start, Vec2 target) {
+
+	// To store if visited or not
+	bool visited[20][41] = { false };
+
+	// Using BFS
+	queue<pair<Vec2, int>> q;
+	q.push(make_pair(start, 1));
+
+	while (!q.empty()) {
+		int y = q.front().first.getY();
+		int x = q.front().first.getX();
+		int value = q.front().second;
+		q.pop();
+		//printf("%d %d->", x, y);
+		// If the target node is reached, return current value. As, we use BFS, we will get only shortest path
+		if (y == target.getY() && x == target.getX()) return value;
+
+		// If current is out of bounds or is 1 or visited, skip it
+		if (y < 0 || y >= 20 || x < 0 || x >= 41 || Curmap[y][x] != nullptr || visited[y][x]) continue;
+
+		// Mark visited and add cells in all directions
+		visited[y][x] = true;
+		q.push(make_pair(Vec2(x, y - 1), value + 1));
+		q.push(make_pair(Vec2(x - 1, y), value + 1));
+		q.push(make_pair(Vec2(x + 1, y), value + 1));
+		q.push(make_pair(Vec2(x, y + 1), value + 1));
+	}
+
+	return -1;
+}
+
+void Game::getShortestWay(Object* start, Object* target)
+{
+	Vec2 ways[4] = { Vec2(1,0),Vec2(-1,0) ,Vec2(0,-1) ,Vec2(0,1) };
+	Vec2 bestway(0, 0);
+	int shortest = 9999;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int dist = shortestPathBinaryMatrix(start->GetCoord() + ways[i], target->GetCoord());
+		if (dist != -1 && dist < shortest)
+		{
+			shortest = dist;
+			bestway.setX(ways[i].getX());
+			bestway.setY(ways[i].getY());
+		}
+	}
+
+	if (shortest <= 5 && (start->GetCoord().getX() == target->GetCoord().getX() || start->GetCoord().getY() == target->GetCoord().getY()))
+	{
+		start->SetNextCoord(start->GetCoord() + Vec2(0, 0));
+	}
+	else
+	{
+		//printf(" %d", shortest);
+		start->SetNextCoord(start->GetCoord() + bestway);
+	}
+	
 }

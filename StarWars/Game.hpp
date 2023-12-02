@@ -8,6 +8,7 @@
 #include "PlayerCharacter.hpp"
 #include "DroppedSpecialItem.hpp"
 #include "Wall.hpp"
+#include <queue>
 
 #ifndef GAME_HPP
 #define GAME_HPP
@@ -26,6 +27,8 @@ public:
 	void UpdateObjectPosition();
 	void UpdateObjects();
 	void UpdateMap();
+	int shortestPathBinaryMatrix(Vec2 start, Vec2 target);
+	void getShortestWay(Object* start, Object* target);
 	bool isOutOfMap(Object* obj);
 	void PlayerShoot(PlayerCharacter* player);
 	std::vector<Object*>& GetObjects();

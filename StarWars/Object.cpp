@@ -69,12 +69,9 @@ void Object::SetSpeed(int speed)
 	this->speed = speed;
 }
 
-bool Object::IsCharacter() 
+bool Object::IsPlayer()
 {
-	if (object_type == ObjectType::ENEMY_NPC || object_type == ObjectType::FRIENDLY_NPC || object_type == ObjectType::PLAYER_CHARACTER || object_type == ObjectType::NON_PLAYER_CHARACTER || this->object_type == ObjectType::CHARACTER)
-		return true;
-
-	return false;
+	return object_type == ObjectType::PLAYER_CHARACTER;
 }
 
 bool Object::IsItem() 

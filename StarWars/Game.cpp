@@ -36,7 +36,87 @@ void Game::UpdateObjects()
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 			continue;
 
+		if ((*it)->IsPlayer())
+		{
+			PlayerCharacter* player = static_cast<PlayerCharacter*>(*it);
+
+			for (int i = 0; i < 2; ++i)
+			{
+				int next_x = player->GetCoordAsInt().getX();
+				int next_y = player->GetCoordAsInt().getY() + i;
+
+				if (!(0 <= next_x && next_x <= WIDTH) || !(0 <= next_y && next_y <= HEIGHT))
+					continue;
+
+				Object* obj = Curmap[next_y][next_x];
+				
+				if (obj == nullptr)
+					continue;
+
+				if (obj != *it && obj->IsCollisionWith(*it))
+				{
+					if (obj->GetObjectType() == ObjectType::WALL || obj->GetObjectType() == ObjectType::PLAYER_CHARACTER)
+					{
+						
+					}
+
+
+				}
+			}
+		}
+
+		if ((*it)->IsItem())
+		{
+			DroppedItem* item = static_cast<DroppedItem*>(*it);
+
+			int next_x = item->GetCoordAsInt().getX();
+			int next_y = item->GetCoordAsInt().getY();
+
+			Object* obj = Curmap[next_y][next_x];
+
+			if (obj == nullptr)
+				continue;
+
+			if (obj->IsPlayer())
+			{
+				if (obj == objects[0])
+					item->useItem(obj, objects[1], objects);
+
+				else
+					item->useItem(obj, objects[0], objects);
+
+				it = objects.erase(it);
+			}
+		}
+
+		if ((*it)->GetObjectType() == ObjectType::PARTICLE)
+		{
+			Particle* bullet = static_cast<Particle*>(*it);
+
+			bullet->current_range++;
+
+			int next_x = bullet->GetCoordAsInt().getX();
+			int next_y = bullet->GetCoordAsInt().getY();
 		
+			Object* obj = Curmap[next_y][next_x];
+
+			if (obj == nullptr)
+				continue;
+
+			if (obj->IsPlayer() && bullet->shooter != obj)
+			{
+				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
+
+				target->giveDamage(bullet->getDamage());
+				it = objects.erase(it);
+				
+				continue;
+			}
+
+			if (bullet->current_range >= bullet->max_range)
+				it = objects.erase(it);
+
+		}
 	}
 }
 
@@ -98,13 +178,13 @@ void Game::UpdateObjects()
 			{
 				PlayerCharacter* player = (PlayerCharacter*)objects[i];
 
-				if (	player->GetVelocity().getY() <= 0  
-						&&	
-						( 
-							(it2->GetObjectType() == ObjectType::WALL) && (player->GetCoord() + Vec2(0, -1) == it2->GetCoord())
-							|| 
-							(it2->IsCharacter()) && (player->GetCoord() + Vec2(0, -2) == it2->GetCoord()) 
-						) 
+				if (player->GetVelocity().getY() <= 0
+					&&
+					(
+						(it2->GetObjectType() == ObjectType::WALL) && (player->GetCoord() + Vec2(0, -1) == it2->GetCoord())
+						||
+						(it2->IsCharacter()) && (player->GetCoord() + Vec2(0, -2) == it2->GetCoord())
+						)
 					)
 				{
 					player->GetVelocity().setY(0);
@@ -114,7 +194,7 @@ void Game::UpdateObjects()
 				}
 			}
 		}
-		
+
 
 		for (auto& it2 : objects)
 		{
@@ -122,7 +202,7 @@ void Game::UpdateObjects()
 			{
 				if (it->IsCharacter() && (it2->GetObjectType() == ObjectType::WALL || it2->IsCharacter()))
 				{
-					if (it->GetNextCoord() == it2->GetCoord() || it->GetNextCoord() + Vec2(0,1) == it2->GetCoord() || it->GetNextCoord() + Vec2(0, -1) == it2->GetCoord())
+					if (it->GetNextCoord() == it2->GetCoord() || it->GetNextCoord() + Vec2(0, 1) == it2->GetCoord() || it->GetNextCoord() + Vec2(0, -1) == it2->GetCoord())
 						it->GetVelocity().setX(0);
 
 					if (it->GetCoord().getY() + 2 == it2->GetCoord().getY())
@@ -131,11 +211,11 @@ void Game::UpdateObjects()
 
 						player->setJumpTimer(player->getJumpLimit());
 						it->SetNextCoord(it->GetCoord());
-					
+
 						break;
 					}
 
-				UpdateObjectNextPosition(it);
+					UpdateObjectNextPosition(it);
 				}
 
 				if (it->IsCharacter() && it2->IsItem())
@@ -173,7 +253,7 @@ void Game::UpdateObjects()
 						break;
 					}
 
-					if (it2->IsCharacter() && ((Particle *)it)->shooter != it2)
+					if (it2->IsCharacter() && ((Particle*)it)->shooter != it2)
 					{
 						(dynamic_cast<Character*>(it2))->giveDamage((dynamic_cast<Particle*>(it))->getDamage());
 
@@ -188,14 +268,14 @@ void Game::UpdateObjects()
 
 		if (it->GetObjectType() == ObjectType::PARTICLE)
 		{
-			if (((Particle*)it)->cur_range >= ((Particle*)it)->max_range)
+			if (((Particle*)it)->current_range >= ((Particle*)it)->max_range)
 			{
 				it->SetDeleteObject(true);
 				should_delete = true;
 			}
 			else
 			{
-				((Particle*)it)->cur_range++;
+				((Particle*)it)->current_range++;
 			}
 		}
 
@@ -213,7 +293,7 @@ void Game::UpdateObjects()
 		}
 
 
-		if (it->GetObjectType() == ObjectType::PLAYER_CHARACTER && ((Character *)it)->getHealth() <= 0)
+		if (it->GetObjectType() == ObjectType::PLAYER_CHARACTER && ((Character*)it)->getHealth() <= 0)
 		{
 			this->SetGameOver(true);
 		}
@@ -238,27 +318,8 @@ void Game::UpdateObjects()
 
 void Game::UpdateObjectPosition()
 {
-	PlayerCharacter* player1 = (PlayerCharacter*)objects[0];
-	PlayerCharacter* player2 = (PlayerCharacter*)objects[1];
-
-	if (player1->GetCoord() != player1->GetNextCoord())
-		player1->setJumpTimer(player1->getJumpTimer() + 1);
-	
-	if (player2->GetCoord() != player2->GetNextCoord())
-		player2->setJumpTimer(player2->getJumpTimer() + 1);
-
-	Curmap[player1->GetCoordAsInt().getY()][player1->GetCoord().getX()] = 0;
-	Curmap[player2->GetCoord().getY()][player2->GetCoord().getX()] = 0;
-	Curmap[player1->GetCoord().getY() + 1][player1->GetCoord().getX()] = 0;
-	Curmap[player2->GetCoord().getY() + 1][player2->GetCoord().getX()] = 0;
-
 	for (std::vector<Object*>::iterator it = objects.begin(); it < objects.end(); ++it)
 		(*it)->SetCoord((*it)->GetNextCoord());
-
-	Curmap[player1->GetCoord().getY()][player1->GetCoord().getX()] = 2;
-	Curmap[player2->GetCoord().getY()][player2->GetCoord().getX()] = 2;
-	Curmap[player1->GetCoord().getY() + 1][player1->GetCoord().getX()] = 2;
-	Curmap[player2->GetCoord().getY() + 1][player2->GetCoord().getX()] = 2;
 }
 
 bool Game::isOutOfMap(Object* obj)

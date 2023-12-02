@@ -113,6 +113,8 @@ bool GameManager::PrecedeGame()
 
 		this->game->UpdateObjectNextPosition();
 		this->game->UpdateObjects();
+		this->game->UpdateObjectPosition();
+		this->game->UpdateMap();
 		return true;
 	}
 

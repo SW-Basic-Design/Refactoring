@@ -23,7 +23,7 @@ public:
 	std::vector<Object*>& GetObjects();
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
-	const static Object* map[20][41];
+	const static int map[20][41];
 	static Object* Curmap[20][41];
 private:
 	bool gameOver;

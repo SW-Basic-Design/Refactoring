@@ -125,7 +125,6 @@ int DroppedWeapon::getRPM(int weapon_id)
 
 int DroppedWeapon::getMaxRange(int weapon_id)
 {
-	return 1000;
 	switch (weapon_id)
 	{
 	case 1://pistol
@@ -135,7 +134,7 @@ int DroppedWeapon::getMaxRange(int weapon_id)
 		return  20;
 
 	case 3: // sword
-		return 0;
+		return 2;
 
 	case 4://shotgun
 		return 7;
@@ -147,8 +146,7 @@ int DroppedWeapon::getMaxRange(int weapon_id)
 		return 10;
 
 	default://fist
-		return 0;
-		break;
+		return 2;
 	}
 }
 

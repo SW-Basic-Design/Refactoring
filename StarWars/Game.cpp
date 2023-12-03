@@ -46,10 +46,16 @@ void Game::MakePlayer()
 	player2->SetVelocity({ 0, 0 });
 
 	player1->SetSpeed(10);
-	player2->SetSpeed(10);
+	player2->SetSpeed(5);
+
+	player1->setOriginalSpeed(10);
+	player2->setOriginalSpeed(5);
 
 	player1->setWeapon(6);
-	player2->setWeapon(5);
+	player2->setWeapon(1);
+
+	player2->setAI(true);
+	player2->setTarget(player1);
 }
 
 void Game::MakeItem()
@@ -172,22 +178,23 @@ void Game::UpdateObjects()
 
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
+		if ((*it)->IsCharacter() && ((Character*)*it)->IsAI())
+		{
+			getShortestWay((*it), (*it)->getTarget());
+
+			if (shouldShoot(*it))
+				PlayerShoot((Character*)*it);
+		}
+
 		if ((*it)->last_updated + (1000.0 / (*it)->GetSpeed()) > milli)
 			continue;
 
 		(*it)->last_updated = milli;
 
-		UpdateSingleObjectNextPosition(*it);
-
-		//플레이어 2가 Ai인 경우 연산
-		if ((*it) == objects[1])
-		{
-			getShortestWay((*it), objects[0]);
-		}
-		
-
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 			continue;
+
+		UpdateSingleObjectNextPosition(*it);
 
 		if ((*it)->IsPlayer())
 		{
@@ -197,7 +204,7 @@ void Game::UpdateObjects()
 			if (player->current_buff != 0 && player->buff_start + player->getBuffTimer() < milli)
 			{
 				player->current_buff = 0;
-				player->SetSpeed(10);
+				player->SetSpeed(player->getOriginalSpeed());
 				player->isFreeze = false;
 				player->setBuffTimer(0);
 			}
@@ -235,7 +242,7 @@ void Game::UpdateObjects()
 
 			else
 				continue;
-			
+
 			it = objects.erase(it);
 
 			if (it == objects.end())
@@ -254,6 +261,14 @@ void Game::UpdateObjects()
 
 			Object* obj = Curmap[next_y][next_x];
 
+			if (bullet->current_range >= bullet->max_range)
+			{
+				it = objects.erase(it);
+
+				if (it == objects.end())
+					break;
+			}
+
 			if (obj == nullptr)
 				continue;
 
@@ -265,9 +280,9 @@ void Game::UpdateObjects()
 					break;
 
 				continue;
-			}	
+			}
 
-			if (obj->IsCollisionWith(*it) && obj->IsPlayer() && bullet->shooter != obj)
+			if (obj->IsCollisionWith(*it) && bullet->shooter != obj && !obj->IsItem() && obj->GetObjectType() != ObjectType::PARTICLE)
 			{
 				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
 
@@ -278,14 +293,6 @@ void Game::UpdateObjects()
 					break;
 
 				continue;
-			}
-
-			if (bullet->current_range >= bullet->max_range)
-			{
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
 			}
 		}
 	}
@@ -360,12 +367,14 @@ bool Game::isOutOfMap(Object* obj)
 	}
 }
 
-
-void Game::PlayerShoot(PlayerCharacter* player)
+void Game::PlayerShoot(Character* player)
 {
 	auto milli = GetTickCount64();
 
 	if (player->last_shot + (1000.0 / player->getWeaponRPM()) > milli)
+		return;
+
+	if (player->isFreeze)
 		return;
 
 	if (player->bullet_count != 0)
@@ -422,7 +431,10 @@ void Game::PlayerShoot(PlayerCharacter* player)
 	}
 }
 
-int Game::shortestPathBinaryMatrix(Vec2 start, Vec2 target) {
+int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
+
+	Vec2 start = ai->GetCoord() + way;
+	Vec2 target = enemy->GetCoord();
 
 	// To store if visited or not
 	bool visited[20][41] = { false };
@@ -441,7 +453,17 @@ int Game::shortestPathBinaryMatrix(Vec2 start, Vec2 target) {
 		if (y == target.getY() && x == target.getX()) return value;
 
 		// If current is out of bounds or is 1 or visited, skip it
-		if (y < 0 || y >= 20 || x < 0 || x >= 41 || Curmap[y][x] != nullptr || visited[y][x]) continue;
+		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
+
+		random_device rd_variable;
+		mt19937 generate(rd_variable());
+		uniform_int_distribution<> avoid(0, 3);
+
+		int should_avoid = avoid(generate);
+
+		if (should_avoid <= difficulty)
+			if (Curmap[y][x] != nullptr && (Curmap[y][x]->GetObjectType() == ObjectType::PARTICLE && ((Particle*)Curmap[y][x])->shooter != ai))
+				continue;
 
 		// Mark visited and add cells in all directions
 		visited[y][x] = true;
@@ -454,15 +476,17 @@ int Game::shortestPathBinaryMatrix(Vec2 start, Vec2 target) {
 	return -1;
 }
 
-void Game::getShortestWay(Object* start, Object* target)
+void Game::getShortestWay(Object* ai, Object* target)
 {
+	Character* ai_character = (PlayerCharacter*)ai;
+
 	Vec2 ways[4] = { Vec2(1,0),Vec2(-1,0) ,Vec2(0,-1) ,Vec2(0,1) };
 	Vec2 bestway(0, 0);
 	int shortest = 9999;
 
 	for (int i = 0; i < 4; i++)
 	{
-		int dist = shortestPathBinaryMatrix(start->GetCoord() + ways[i], target->GetCoord());
+		int dist = shortestPathBinaryMatrix(ai_character, target, ways[i]);
 		if (dist != -1 && dist < shortest)
 		{
 			shortest = dist;
@@ -471,14 +495,60 @@ void Game::getShortestWay(Object* start, Object* target)
 		}
 	}
 
-	if (shortest <= 5 && (start->GetCoord().getX() == target->GetCoord().getX() || start->GetCoord().getY() == target->GetCoord().getY()))
-	{
-		start->SetNextCoord(start->GetCoord() + Vec2(0, 0));
-	}
+	if (shortest <= ai_character->getWeaponMaxRange() - 1 && (ai_character->GetCoord().getX() == target->GetCoord().getX() || ai_character->GetCoord().getY() == target->GetCoord().getY()))
+		ai_character->SetVelocity({ 0,0 });
+
 	else
+		ai_character->SetVelocity(bestway);
+
+	if (ai_character->GetVelocity() != Vec2{ 0,0 })
+		ai_character->direction = ai_character->GetVelocity();
+
+	if (ai_character->GetCoord().getX() == target->GetCoord().getX())
 	{
-		//printf(" %d", shortest);
-		start->SetNextCoord(start->GetCoord() + bestway);
+		if (ai_character->GetCoord().getY() - target->GetCoord().getY() < 0)
+			ai_character->direction = Vec2{ 0, 1 };
+
+		else
+			ai_character->direction = Vec2{ 0, -1 };
 	}
-	
+
+	if (ai_character->GetCoord().getY() == target->GetCoord().getY())
+	{
+		if (ai_character->GetCoord().getX() - target->GetCoord().getX() < 0)
+			ai_character->direction = Vec2{ 1, 0 };
+
+		else
+			ai_character->direction = Vec2{ -1, 0 };
+	}
+}
+
+bool Game::shouldShoot(Object* ai)
+{
+	Character* ai_character = (Character*)ai;
+
+	if (ai_character->getTarget() == nullptr)
+		return false;
+
+	Vec2 ai_coord = ai_character->GetCoord();
+	Vec2 target_coord = ai_character->getTarget()->GetCoord();
+
+	int ai_x = ai_coord.getX();
+	int ai_y = ai_coord.getY();
+
+	int target_x = target_coord.getX();
+	int target_y = target_coord.getY();
+
+	double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
+
+	if (dist > (double)ai_character->getWeaponMaxRange())
+		return false;
+
+	if (ai_x == target_x)
+		return true;
+
+	if (ai_y == target_y)
+		return true;
+
+	return false;
 }

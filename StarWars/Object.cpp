@@ -6,6 +6,7 @@ Object::Object(Vec2 coord, Vec2 nextCoord, Vec2 velocity, int speed) : coord(coo
 {
 	this->object_type = ObjectType::OBJECT;
 
+	this->original_speed = speed;
 	this->nextCoord = coord;
 }
 
@@ -59,6 +60,11 @@ bool Object::IsPlayer()
 	return object_type == ObjectType::PLAYER_CHARACTER;
 }
 
+bool Object::IsCharacter()
+{
+	return object_type == ObjectType::CHARACTER || object_type == ObjectType::NON_PLAYER_CHARACTER || object_type == ObjectType::ENEMY_NPC || object_type == ObjectType::FRIENDLY_NPC || object_type == ObjectType::PLAYER_CHARACTER;
+}
+
 bool Object::IsItem() 
 {
 	if (object_type == ObjectType::DROPPED_ITEM || object_type == ObjectType::DROPPED_SPECIAL_ITEM || object_type == ObjectType::DROPPED_WEAPON)
@@ -105,4 +111,24 @@ bool Object::IsCollisionWith(Object* obj)
 		return true;
 	
 	return false;
+}
+
+Object* Object::getTarget()
+{
+	return target;
+}
+
+int Object::getOriginalSpeed()
+{
+	return original_speed;
+}
+
+void Object::setOriginalSpeed(int original_speed)
+{
+	this->original_speed = original_speed;
+}
+
+void Object::setTarget(Object* target)
+{
+	this->target = target;
 }

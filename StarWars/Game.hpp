@@ -27,11 +27,12 @@ public:
 	void UpdateObjectPosition();
 	void UpdateObjects();
 	void UpdateMap();
-	int shortestPathBinaryMatrix(Vec2 start, Vec2 target);
+	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);
 	bool isOutOfMap(Object* obj);
-	void PlayerShoot(PlayerCharacter* player);
+	void PlayerShoot(Character* player);
 	std::vector<Object*>& GetObjects();
+	bool shouldShoot(Object* ai);
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
 	const int map[20][41] = {
@@ -58,6 +59,7 @@ public:
 	};
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
+	int difficulty = 0;
 
 private:
 	bool gameOver;

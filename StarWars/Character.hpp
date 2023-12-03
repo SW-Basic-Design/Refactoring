@@ -33,11 +33,14 @@ public:
 	int buff_start;
 	std::string getWeaponName();
 	std::string getBuffName();
+	bool IsAI();
+	void setAI(bool);
 protected:
 	int speed;
 	int health;
 	int weapon_id;
 	int buff_timer;
+	bool is_ai;
 };
 
 #endif

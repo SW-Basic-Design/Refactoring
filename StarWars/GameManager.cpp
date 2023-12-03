@@ -12,6 +12,8 @@ void GameManager::StartGame()
 
 	this->game->MakePlayer();
 	this->game->MakeMap();
+	
+	this->game->difficulty = 3;
 
 	while (PrecedeGame())
 	{
@@ -32,8 +34,6 @@ bool GameManager::PrecedeGame()
 			last_item_SpawnTime = milli;
 			game->MakeItem();
 		}
-
-		game->last_updated = milli;
 
 		this->game->UpdateObjects();
 		this->game->UpdateObjectPosition();
@@ -56,62 +56,50 @@ void GameManager::GetPlayerKeyInput()
 
 	if (GetAsyncKeyState(0x41))
 	{
-		player1->GetVelocity().setX(-1);
-		player1->direction.setX(-1);
-		player1->direction.setY(0);
+		player1->SetVelocity({ -1, 0 });
+		player1->direction = { -1, 0 };
 	}
 
 	if (GetAsyncKeyState(0x44))
 	{
-		player1->GetVelocity().setX(1);
-		player1->direction.setX(1);
-		player1->direction.setY(0);
+		player1->direction = { 1, 0 };
+		player1->SetVelocity({ 1, 0 });
 	}
 
 	else if (!GetAsyncKeyState(0x41) && !GetAsyncKeyState(0x44))
 		player1->GetVelocity().setX(0);
 
 	if (GetAsyncKeyState(0x47))
-	{
-		if (!player1->isFreeze)
-			game->PlayerShoot(player1);
-	}
+		game->PlayerShoot(player1);
 
 	if (GetAsyncKeyState(VK_LEFT))
 	{
-		player2->GetVelocity().setX(-1);
-		player2->direction.setX(-1);
-		player2->direction.setY(0);
+		player2->SetVelocity({ -1, 0 });
+		player2->direction = { -1, 0 };
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT))
 	{
-		player2->GetVelocity().setX(1);
-		player2->direction.setX(1);
-		player2->direction.setY(0);
+		player2->direction = { 1, 0 };
+		player2->SetVelocity({ 1, 0 });
 	}
 
 	else if (!GetAsyncKeyState(VK_LEFT) && !GetAsyncKeyState(VK_RIGHT))
 		player2->GetVelocity().setX(0);
 
 	if (GetAsyncKeyState(VK_NUMPAD5))
-	{
-		if (!player2->isFreeze)
-			game->PlayerShoot(player2);
-	}
+		game->PlayerShoot(player2);
 
 	if (GetAsyncKeyState(0x57))
 	{
-		player1->GetVelocity().setY(1);
-		player1->direction.setX(0);
-		player1->direction.setY(1);
+		player1->direction = { 0, 1 };
+		player1->SetVelocity({ 0, 1 });
 	}
 
 	if (GetAsyncKeyState(VK_UP))
 	{
-		player2->GetVelocity().setY(1);
-		player2->direction.setX(0);
-		player2->direction.setY(1);
+		player2->direction = { 0, 1 };
+		player2->SetVelocity({ 0, 1 });
 	}
 
 	else if (!GetAsyncKeyState(0x57) && !GetAsyncKeyState(0x53))
@@ -119,16 +107,14 @@ void GameManager::GetPlayerKeyInput()
 
 	if (GetAsyncKeyState(0x53))
 	{
-		player1->GetVelocity().setY(-1);
-		player1->direction.setX(0);
-		player1->direction.setY(-1);
+		player1->direction = { 0, -1 };
+		player1->SetVelocity({ 0, -1 });
 	}
 
 	if (GetAsyncKeyState(VK_DOWN))
 	{
-		player2->GetVelocity().setY(-1);
-		player2->direction.setX(0);
-		player2->direction.setY(-1);
+		player2->direction = { 0, -1 };
+		player2->SetVelocity({ 0, -1 });
 	}
 
 	else if (!GetAsyncKeyState(VK_UP) && !GetAsyncKeyState(VK_DOWN))

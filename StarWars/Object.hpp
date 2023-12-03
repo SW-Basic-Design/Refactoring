@@ -33,16 +33,22 @@ public:
 	bool IsCollisionWith(Object*);
 	ObjectType GetObjectType();
 	bool IsPlayer();
+	bool IsCharacter();
 	bool IsItem();
 	int GetCollisionPriority();
 	long long last_updated = 0;
-
+	Object* getTarget();
+	int getOriginalSpeed();
+	void setOriginalSpeed(int);
+	void setTarget(Object*);
 protected:
 	ObjectType object_type = ObjectType::OBJECT;
 	Vec2 coord;
 	Vec2 nextCoord;
 	Vec2 velocity;
 	int speed;
+	int original_speed;
+	Object* target;
 };
 
 #endif

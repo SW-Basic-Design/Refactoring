@@ -12,6 +12,8 @@ Character::Character() : Object()
 	this->bullet_count = 0;
 	this->last_shot = 0;
 	this->current_buff = 0;
+	this->buff_start = 0;
+	this->is_ai = false;
 }
 
 void Character::setWeapon(int weapon_id) 
@@ -131,4 +133,14 @@ bool Character::isWeaponShotgun()
 bool Character::isWeaponHatoken()
 {
 	return DroppedWeapon::isHatoken(weapon_id);
+}
+
+bool Character::IsAI()
+{
+	return is_ai;
+}
+
+void Character::setAI(bool is_ai)
+{
+	this->is_ai = is_ai;
 }

@@ -197,10 +197,16 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 					Print("¦¡");
 			}
 			break;
+		
 		case ObjectType::DROPPED_SPECIAL_ITEM : case ObjectType::DROPPED_WEAPON :
 			Print("¢Ã");
 			break;
+
+		case ObjectType::FRIENDLY_NPC:
+			Print("A");
+			break;
 		}
+
 	}
 
 	drawStatus((Character*)objects[0], (Character*)objects[1]);

@@ -102,7 +102,6 @@ bool Object::IsCollisionWith(Object* obj)
 
 	Vec2 obj_current = obj->GetCoord();
 	Vec2 obj_next = obj->GetNextCoord();
-
 	
 	if (next == obj_next || current == obj_current || next == obj_current || current == obj_next)
 		return true;

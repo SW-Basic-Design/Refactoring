@@ -8,6 +8,7 @@
 #include "PlayerCharacter.hpp"
 #include "DroppedSpecialItem.hpp"
 #include "Wall.hpp"
+#include "FriendlyNPC.hpp"
 #include <queue>
 
 #ifndef GAME_HPP

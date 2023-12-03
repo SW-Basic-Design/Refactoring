@@ -56,6 +56,22 @@ void Game::MakePlayer()
 
 	player2->setAI(true);
 	player2->setTarget(player1);
+
+	FriendlyNPC* fnpc = new FriendlyNPC();
+
+	objects.push_back(fnpc);
+
+	fnpc->SetCoord({ 11, 1 });
+	fnpc->SetNextCoord({ 11, 1 });
+
+
+	fnpc->SetVelocity({ 0, 0 });
+	fnpc->SetSpeed(5);
+	fnpc->setOriginalSpeed(5);
+
+	fnpc->setWeapon(6);
+	fnpc->setAI(true);
+	fnpc->setTarget(player2);
 }
 
 void Game::MakeItem()
@@ -192,7 +208,19 @@ void Game::UpdateObjects()
 		(*it)->last_updated = milli;
 
 		if ((*it)->GetObjectType() == ObjectType::WALL)
+		{
+			Wall* wall = (Wall*)*it;
+			
+			if (wall->getHealth() <= 0)
+			{
+				it = objects.erase(it);
+
+				if (it == objects.end())
+					break;
+			}
+
 			continue;
+		}
 
 		UpdateSingleObjectNextPosition(*it);
 
@@ -225,6 +253,29 @@ void Game::UpdateObjects()
 				player->SetNextCoord(player->GetCoord());
 				continue;
 			}
+
+			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::PARTICLE)
+			{
+				Particle* bullet = (Particle *)Curmap[next_y][next_x];
+
+				if (bullet->shooter == *it)
+					continue;
+
+				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
+
+				target->giveDamage(bullet->getDamage());
+
+				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+				{
+					if (*it2 == bullet)
+						it2 = objects.erase(it2);
+
+					if (it2 == objects.end())
+						break;
+				}
+
+				continue;
+			}
 		}
 
 		if ((*it)->IsItem())
@@ -248,6 +299,7 @@ void Game::UpdateObjects()
 			if (it == objects.end())
 				break;
 
+			continue;
 		}
 
 		if ((*it)->GetObjectType() == ObjectType::PARTICLE)
@@ -259,21 +311,28 @@ void Game::UpdateObjects()
 			int next_x = bullet->GetNextCoord().getX();
 			int next_y = bullet->GetNextCoord().getY();
 
-			Object* obj = Curmap[next_y][next_x];
-
-			if (bullet->current_range >= bullet->max_range)
+			if (bullet->current_range >= bullet->max_range || !(0 < next_x && next_x <= 40) || !(0 <= next_y && next_y <= 19))
 			{
 				it = objects.erase(it);
 
 				if (it == objects.end())
 					break;
+
+				continue;
 			}
+
+
+			Object* obj = Curmap[next_y][next_x];
 
 			if (obj == nullptr)
 				continue;
 
 			if (obj->GetObjectType() == ObjectType::WALL)
 			{
+				Wall* wall = static_cast<Wall*>(obj);
+
+				wall->giveDamage(bullet->getDamage());
+
 				it = objects.erase(it);
 
 				if (it == objects.end())
@@ -367,67 +426,67 @@ bool Game::isOutOfMap(Object* obj)
 	}
 }
 
-void Game::PlayerShoot(Character* player)
+void Game::PlayerShoot(Character* character)
 {
 	auto milli = GetTickCount64();
 
-	if (player->last_shot + (1000.0 / player->getWeaponRPM()) > milli)
+	if (character->last_shot + (1000.0 / character->getWeaponRPM()) > milli)
 		return;
 
-	if (player->isFreeze)
+	if (character->isFreeze)
 		return;
 
-	if (player->bullet_count != 0)
-		player->bullet_count -= 1;
+	if (character->bullet_count != 0)
+		character->bullet_count -= 1;
 
-	player->last_shot = milli;
+	character->last_shot = milli;
 
-	for (int i = 0; i < (player->isWeaponShotgun() ? 2 : 1); i++)
+	for (int i = 0; i < (character->isWeaponShotgun() ? 2 : 1); i++)
 	{
 		Particle* p = new Particle();
 
-		p->SetSpeed(player->getWeaponSpeed());
-		p->setDamage(player->getWeaponDamage());
-		p->shooter = player;
-		p->max_range = player->getWeaponMaxRange();
-		p->isMelee = player->isWeaponMelee();
-		p->isShotgun = player->isWeaponShotgun();
-		p->isHatoken = player->isWeaponHatoken();
+		p->SetSpeed(character->getWeaponSpeed());
+		p->setDamage(character->getWeaponDamage());
+		p->shooter = character;
+		p->max_range = character->getWeaponMaxRange();
+		p->isMelee = character->isWeaponMelee();
+		p->isShotgun = character->isWeaponShotgun();
+		p->isHatoken = character->isWeaponHatoken();
 
-		if (player->direction.getX() >= 0 && player->direction.getY() == 0)
+		if (character->direction.getX() >= 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(player->GetCoord());
-			p->SetNextCoord(player->GetCoord());
+			p->SetCoord(character->GetCoord());
+			p->SetNextCoord(character->GetCoord());
 			p->SetVelocity(Vec2{ 1, 0 });
 		}
 
-		else if (player->direction.getX() < 0 && player->direction.getY() == 0)
+		else if (character->direction.getX() < 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(player->GetCoord());
-			p->SetNextCoord(player->GetCoord());
+			p->SetCoord(character->GetCoord());
+			p->SetNextCoord(character->GetCoord());
 			p->SetVelocity(Vec2{ -1, 0 });
 		}
 
-		else if (player->direction.getY() >= 0)
+		else if (character->direction.getY() >= 0)
 		{
-			p->SetCoord(player->GetCoord());
-			p->SetNextCoord(player->GetCoord());
+			p->SetCoord(character->GetCoord());
+			p->SetNextCoord(character->GetCoord());
 			p->SetVelocity(Vec2{ 0, 1 });
 		}
 
 		else
 		{
-			p->SetCoord(player->GetCoord());
-			p->SetNextCoord(player->GetCoord());
+			p->SetCoord(character->GetCoord());
+			p->SetNextCoord(character->GetCoord());
 			p->SetVelocity(Vec2{ 0, -1 });
 		}
 
 		objects.push_back(p);
 	}
 
-	if (player->bullet_count == 0)
+	if (character->bullet_count == 0)
 	{
-		player->setWeapon(0);
+		character->setWeapon(0);
 	}
 }
 

@@ -41,7 +41,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 3:
-		/*random_device rd;
+		random_device rd;
 		mt19937 gen(rd());
 		uniform_int_distribution<> dist(1, 20);
 
@@ -50,12 +50,13 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			Particle* bullet = new Particle();
 			bullet->isBombing = true;
 
+			bullet->shooter = user_1;
 			bullet->SetSpeed(1);
 			bullet->setDamage(5);
 			bullet->max_range = 50;
 			bullet->SetCoord({ dist(gen), 19});
-			bullet->SetNextCoord(bullet->GetCoord() + Vec2<int>{ 1, -1 });
-			bullet->SetVelocity(Vec2<int>{ 1.0, -1.0 });
+			bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 1, -1 });
+			bullet->SetVelocity(Vec2{ 1, -1 });
 
 			objects.push_back(bullet);
 		}
@@ -65,6 +66,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			Particle* p = new Particle();
 			p->isBombing = true;
 
+			p->shooter = user_1;
 			p->SetSpeed(1);
 			p->setDamage(5);
 			p->max_range = 50;
@@ -73,7 +75,8 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			p->SetVelocity(Vec2{ -1, -1 });
 
 			objects.push_back(p);
-		}*/
+		}
+
 		break;
 	}
 }

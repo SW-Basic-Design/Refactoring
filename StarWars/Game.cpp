@@ -295,6 +295,7 @@ void Game::UpdateObjects()
 				continue;
 
 			it = objects.erase(it);
+			
 
 			if (it == objects.end())
 				break;
@@ -311,7 +312,7 @@ void Game::UpdateObjects()
 			int next_x = bullet->GetNextCoord().getX();
 			int next_y = bullet->GetNextCoord().getY();
 
-			if (bullet->current_range >= bullet->max_range || !(0 < next_x && next_x <= 40) || !(0 <= next_y && next_y <= 19))
+			if (bullet->current_range >= bullet->max_range || !(0 <= next_x && next_x <= 40) || !(0 <= next_y && next_y <= 19))
 			{
 				it = objects.erase(it);
 
@@ -354,6 +355,7 @@ void Game::UpdateObjects()
 				continue;
 			}
 		}
+
 	}
 
 	PlayerCharacter* p1 = (PlayerCharacter*)objects[0];

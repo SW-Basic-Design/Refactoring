@@ -87,6 +87,15 @@ void Game::replacePlayer()
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
+
+	if (player1->getHealth() <= 0)
+	{
+		player1->setHealth(100);
+	}
+	if (player2->getHealth() <= 0)
+	{
+		player2->setHealth(100);
+	}
 }
 
 void Game::MakeItem()
@@ -387,17 +396,13 @@ void Game::UpdateObjects()
 				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
 
 				target->giveDamage(bullet->getDamage());
-<<<<<<< Updated upstream
 				target->is_attacked = true;
 				target->SetHitTimer(1);
-=======
 
 				if (obj->IsCharacter() && ((PlayerCharacter*)obj)->getHealth() <= 0)
 				{
 					this->gameOver = true;
 				}
-
->>>>>>> Stashed changes
 				it = objects.erase(it);
 
 				if (it == objects.end())

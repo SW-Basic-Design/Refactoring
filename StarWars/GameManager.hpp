@@ -25,6 +25,7 @@ public:
 private:
 	FrameManager frameManager;
 	Game* game;
+	void showGameOverScene();
 };
 
 #endif

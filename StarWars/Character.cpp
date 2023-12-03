@@ -16,6 +16,7 @@ Character::Character() : Object()
 	this->current_buff = 0;
 	this->buff_start = 0;
 	this->is_ai = false;
+	this->life = 3;
 }
 
 void Character::setWeapon(int weapon_id) 

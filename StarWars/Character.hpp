@@ -34,6 +34,7 @@ public:
 	long long last_shot;
 	int current_buff;
 	int buff_start;
+	int life;
 	std::string getWeaponName();
 	std::string getBuffName();
 	bool IsAI();

@@ -74,6 +74,21 @@ void Game::MakePlayer()
 	fnpc->setTarget(player2);
 }
 
+void Game::replacePlayer()
+{
+	PlayerCharacter* player1 = (PlayerCharacter * )objects[0];
+	PlayerCharacter* player2 = (PlayerCharacter * )objects[1];
+
+	player1->SetCoord({ 10, 1 });
+	player2->SetCoord({ 25, 1 });
+
+	player1->SetNextCoord({ 10, 1 });
+	player2->SetNextCoord({ 25, 1 });
+
+	player1->SetVelocity({ 0, 0 });
+	player2->SetVelocity({ 0, 0 });
+}
+
 void Game::MakeItem()
 {
 	random_device rd_variable;
@@ -274,6 +289,11 @@ void Game::UpdateObjects()
 
 				target->giveDamage(bullet->getDamage());
 
+				if (player->getHealth() <= 0)
+				{
+					this->gameOver = true;
+				}
+
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 				{
 					if (*it2 == bullet)
@@ -282,6 +302,17 @@ void Game::UpdateObjects()
 					if (it2 == objects.end())
 						break;
 				}
+
+				continue;
+			}
+
+			if (next_y <= 0 || next_y >= 19 || next_x <= 0 || next_x >= 40)
+			{
+				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
+
+				target->giveDamage(9999);
+
+				this->gameOver = true;
 
 				continue;
 			}
@@ -356,8 +387,17 @@ void Game::UpdateObjects()
 				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
 
 				target->giveDamage(bullet->getDamage());
+<<<<<<< Updated upstream
 				target->is_attacked = true;
 				target->SetHitTimer(1);
+=======
+
+				if (obj->IsCharacter() && ((PlayerCharacter*)obj)->getHealth() <= 0)
+				{
+					this->gameOver = true;
+				}
+
+>>>>>>> Stashed changes
 				it = objects.erase(it);
 
 				if (it == objects.end())
@@ -623,4 +663,16 @@ bool Game::shouldShoot(Object* ai)
 		return true;
 
 	return false;
+}
+
+Object * Game::getGameOverPlayer()
+{
+	if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
+	{
+		return(objects[0]);
+	}
+	else
+	{
+		return(objects[1]);
+	}
 }

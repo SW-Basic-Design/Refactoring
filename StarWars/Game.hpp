@@ -19,6 +19,7 @@ public:
 	Game(bool gameOver);
 	void MakeMap();
 	void MakePlayer();
+	void replacePlayer();
 	void MakeItem();
 	Vec2 SetItemCoord();
 	bool IsGameOver();
@@ -30,6 +31,7 @@ public:
 	void UpdateMap();
 	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);
+	Object * getGameOverPlayer();
 	bool isOutOfMap(Object* obj);
 	void PlayerShoot(Character* player);
 	std::vector<Object*>& GetObjects();

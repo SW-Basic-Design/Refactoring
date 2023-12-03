@@ -13,7 +13,7 @@ void GameManager::StartGame()
 	this->game->MakePlayer();
 	this->game->MakeMap();
 	
-	this->game->difficulty = 3;
+	this->game->difficulty = 10;
 
 	while (PrecedeGame())
 	{
@@ -45,6 +45,14 @@ bool GameManager::PrecedeGame()
 
 		return true;
 	}
+
+	this->showGameOverScene();
+	if (((Character*)this->game->GetObjects()[0])->life > 0 && ((Character*)this->game->GetObjects()[1])->life > 0)
+	{
+		this->game->SetGameOver(false);
+		return true;
+	}
+
 
 	return false;
 }
@@ -119,4 +127,34 @@ void GameManager::GetPlayerKeyInput()
 
 	else if (!GetAsyncKeyState(VK_UP) && !GetAsyncKeyState(VK_DOWN))
 		player2->GetVelocity().setY(0);
+}
+
+void GameManager::showGameOverScene()
+{
+	Object* dead_player = this->game->getGameOverPlayer();
+
+	for (int i = 0; i < 6; i++)
+	{
+		this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
+		this->frameManager.PrintStageOverMassage(i % 2);
+		this->frameManager.UpdateFrame();
+		Sleep(600);
+	}
+	
+	this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, 2);
+	this->frameManager.UpdateFrame();
+	Sleep(600);
+
+	//여기에 ChangeMap 함수 삽입 필요
+
+	this->game->replacePlayer();
+
+	for (int i = 0; i < 5; i++)
+	{
+		this->frameManager.MakeFrame(this->game->GetObjects());
+		this->frameManager.PrintCountDown(i);
+		this->frameManager.UpdateFrame();
+		Sleep(1000);
+	}
+
 }

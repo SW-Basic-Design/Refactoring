@@ -5,8 +5,10 @@ Character::Character() : Object()
 	this->object_type = ObjectType::CHARACTER;	
 	this->weapon_id = 0;
 	this->isFreeze = false;
+	bool is_attacked = false;
 	this->health = 100;
 	this->buff_timer = 0;
+	this->hit_timer = 0;
 	this->speed = 1;
 	this->direction = Vec2{ 0, 0 };
 	this->bullet_count = 0;
@@ -93,6 +95,16 @@ void Character::setBuffTimer(const int time)
 int Character::getBuffTimer() 
 {
 	return buff_timer;
+}
+
+void Character::SetHitTimer(const int time)
+{
+	hit_timer = time;
+}
+
+int Character::GetHitTimer()
+{
+	return hit_timer;
 }
 
 int Character::getHealth()

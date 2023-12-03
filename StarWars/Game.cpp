@@ -237,6 +237,15 @@ void Game::UpdateObjects()
 				player->setBuffTimer(0);
 			}
 
+			if (player->GetHitTimer() > 0)
+			{
+				player->SetHitTimer(player->GetHitTimer() - 1);
+			}
+			else
+			{
+				player->is_attacked = false;
+			}
+
 			if (player->isFreeze)
 			{
 				player->SetNextCoord(player->GetCoord());
@@ -347,6 +356,8 @@ void Game::UpdateObjects()
 				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
 
 				target->giveDamage(bullet->getDamage());
+				target->is_attacked = true;
+				target->SetHitTimer(1);
 				it = objects.erase(it);
 
 				if (it == objects.end())

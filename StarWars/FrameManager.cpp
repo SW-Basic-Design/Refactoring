@@ -106,16 +106,24 @@ COORD FrameManager::GetCursorPosition()
 void FrameManager::MakeFrame(std::vector<Object*>& objects)
 {
 	SetCursorPosition({ (short)((objects[0])->GetCoord().getX() * 2), (short)(20 - (objects[0])->GetCoord().getY()) });
-	if (((PlayerCharacter*)objects[0])->isFreeze == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-	else
+	if (((PlayerCharacter*)objects[0])->isFreeze == true && ((PlayerCharacter*)objects[0])->is_attacked == true)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else if (((PlayerCharacter*)objects[0])->isFreeze == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+	else if (((PlayerCharacter*)objects[0])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
 	Print("бр");
 
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
 	
-	if (((PlayerCharacter*)objects[1])->isFreeze == true)
+	if (((PlayerCharacter*)objects[1])->isFreeze == true && ((PlayerCharacter*)objects[1])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else if (((PlayerCharacter*)objects[1])->isFreeze == true)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+	else if (((PlayerCharacter*)objects[1])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 	else
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
 	
@@ -159,7 +167,7 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 
 			if (((Particle*)*it)->isBombing)
 			{
-				Print("@");
+				Print("в┴");
 				break;
 			}
 

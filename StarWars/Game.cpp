@@ -11,7 +11,7 @@ void Game::MakeMap()
 	{
 		for (int x = 0; x < WIDTH; ++x)
 		{
-			if (map[HEIGHT - 1 - y][x] == 1)
+			if (map[0][HEIGHT - 1 - y][x] == 1)
 			{
 				Wall* wall = new Wall();
 
@@ -51,7 +51,7 @@ void Game::MakePlayer()
 	player1->setOriginalSpeed(10);
 	player2->setOriginalSpeed(5);
 
-	player1->setWeapon(6);
+	player1->setWeapon(4);
 	player2->setWeapon(1);
 
 	player1->setTarget(player2);
@@ -538,7 +538,10 @@ void Game::CharacterShoot(Character* character)
 
 	character->last_shot = milli;
 
-	for (int i = 0; i < (character->isWeaponShotgun() ? 2 : 1); i++)
+	int start = character->isWeaponShotgun() ? -1 : 0;
+	int end = character->isWeaponShotgun() ? 2 : 1;
+
+	for (int i = start; i < end; i++)
 	{
 		Particle* p = new Particle();
 
@@ -552,29 +555,29 @@ void Game::CharacterShoot(Character* character)
 
 		if (character->direction.getX() >= 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(0,i));
+			p->SetNextCoord(character->GetCoord() + Vec2(0, i));
 			p->SetVelocity(Vec2{ 1, 0 });
 		}
 
 		else if (character->direction.getX() < 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(0, i));
+			p->SetNextCoord(character->GetCoord() + Vec2(0, i));
 			p->SetVelocity(Vec2{ -1, 0 });
 		}
 
 		else if (character->direction.getY() >= 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(i, 0));
+			p->SetNextCoord(character->GetCoord() + Vec2(i, 0));
 			p->SetVelocity(Vec2{ 0, 1 });
 		}
 
 		else
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(i, 0));
+			p->SetNextCoord(character->GetCoord() + Vec2(i, 0));
 			p->SetVelocity(Vec2{ 0, -1 });
 		}
 

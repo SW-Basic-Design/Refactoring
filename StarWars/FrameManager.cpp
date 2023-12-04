@@ -231,7 +231,7 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	Print("체력 : ");
 	for (int i = 0; i <= 100; i += 10) 
 	{
-		if (player1->getHealth() >= i)
+		if (player1->getHealth() >= i && player1->getHealth() != 0)
 		{
 			Print("■");
 		}
@@ -260,7 +260,7 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	Print("체력 : ");
 	for (int i = 0; i <= 100; i += 10)
 	{
-		if (player2->getHealth() >= i)
+		if (player2->getHealth() >= i && player2->getHealth() != 0)
 		{
 			Print("■");
 		}

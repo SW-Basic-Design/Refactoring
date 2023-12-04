@@ -94,7 +94,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		fnpc->SetSpeed(5);
 		fnpc->setOriginalSpeed(5);
 
-		fnpc->setWeapon(6);
+		fnpc->setWeapon(99);
 		fnpc->setAI(true);
 		fnpc->setMaster(player);
 		fnpc->setTarget(opponent);

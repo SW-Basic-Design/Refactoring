@@ -36,7 +36,7 @@ void Game::MakeMap(int map_index)
 	{
 		for (int x = 0; x < WIDTH; ++x)
 		{
-			if (map[HEIGHT - 1 - y][x] == 1)
+			if (map[0][HEIGHT - 1 - y][x] == 1)
 			{
 				Wall* wall = new Wall();
 
@@ -61,11 +61,11 @@ void Game::MakePlayer()
 	objects.push_back(player1);
 	objects.push_back(player2);
 
-	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 1 });
+	player1->SetCoord({ 9, HEIGHT / 2 });
+	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 1 });
+	player1->SetNextCoord({ 9, HEIGHT / 2 });
+	player2->SetNextCoord({ 31, HEIGHT / 2 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
@@ -76,7 +76,7 @@ void Game::MakePlayer()
 	player1->setOriginalSpeed(10);
 	player2->setOriginalSpeed(5);
 
-	player1->setWeapon(6);
+	player1->setWeapon(4);
 	player2->setWeapon(1);
 
 	player1->setTarget(player2);
@@ -91,11 +91,11 @@ void Game::replacePlayer()
 	PlayerCharacter* player1 = (PlayerCharacter*)objects[0];
 	PlayerCharacter* player2 = (PlayerCharacter*)objects[1];
 
-	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 1 });
+	player1->SetCoord({ 9, HEIGHT / 2 });
+	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 1 });
+	player1->SetNextCoord({ 9, HEIGHT / 2 });
+	player2->SetNextCoord({ 31, HEIGHT / 2 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
@@ -119,18 +119,32 @@ void Game::replacePlayer()
 			((Character*)*it)->setHealth(0);
 
 			it = objects.erase(it);
-
-			if (it == objects.end())
-				break;
+			--it;
 		}
 	}
+}
+
+void Game::removeParticles()
+{
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		Object* obj = *it;
+
+		if (obj->GetObjectType() == ObjectType::PARTICLE) 
+		{
+			it = objects.erase(it);
+			--it;
+		}
+	}
+
+	this->UpdateMap();
 }
 
 void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(1, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(3, 3);
+	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(0, Game::SPECIAL_ITEM_COUNT - 1);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -478,10 +492,11 @@ void Game::UpdateObjects()
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
 		if ((*it)->should_delete)
+		{
 			it = objects.erase(it);
-
-		if (it == objects.end())
-			break;
+			--it;
+		}
+			
 	}
 }
 
@@ -554,7 +569,10 @@ void Game::CharacterShoot(Character* character)
 
 	character->last_shot = milli;
 
-	for (int i = 0; i < (character->isWeaponShotgun() ? 2 : 1); i++)
+	int start = character->isWeaponShotgun() ? -1 : 0;
+	int end = character->isWeaponShotgun() ? 2 : 1;
+
+	for (int i = start; i < end; i++)
 	{
 		Particle* p = new Particle();
 
@@ -569,29 +587,29 @@ void Game::CharacterShoot(Character* character)
 
 		if (character->direction.getX() >= 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(0,i));
+			p->SetNextCoord(character->GetCoord() + Vec2(0, i));
 			p->SetVelocity(Vec2{ 1, 0 });
 		}
 
 		else if (character->direction.getX() < 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(0, i));
+			p->SetNextCoord(character->GetCoord() + Vec2(0, i));
 			p->SetVelocity(Vec2{ -1, 0 });
 		}
 
 		else if (character->direction.getY() >= 0)
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(i, 0));
+			p->SetNextCoord(character->GetCoord() + Vec2(i, 0));
 			p->SetVelocity(Vec2{ 0, 1 });
 		}
 
 		else
 		{
-			p->SetCoord(character->GetCoord());
-			p->SetNextCoord(character->GetCoord());
+			p->SetCoord(character->GetCoord() + Vec2(i, 0));
+			p->SetNextCoord(character->GetCoord() + Vec2(i, 0));
 			p->SetVelocity(Vec2{ 0, -1 });
 		}
 

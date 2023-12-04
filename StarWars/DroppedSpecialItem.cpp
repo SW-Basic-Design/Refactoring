@@ -50,7 +50,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		{
 			Particle* bullet = new Particle();
 			bullet->isBombing = true;
-
+			bullet->isMelee = false;
 			bullet->shooter = user_1;
 			bullet->SetSpeed(1);
 			bullet->setDamage(5);

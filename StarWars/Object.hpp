@@ -38,9 +38,11 @@ public:
 	int GetCollisionPriority();
 	long long last_updated = 0;
 	Object* getTarget();
+	Object* getMaster();
 	int getOriginalSpeed();
 	void setOriginalSpeed(int);
 	void setTarget(Object*);
+	void setMaster(Object*);
 protected:
 	ObjectType object_type = ObjectType::OBJECT;
 	Vec2 coord;
@@ -49,6 +51,7 @@ protected:
 	int speed;
 	int original_speed;
 	Object* target;
+	Object* master;
 };
 
 #endif

@@ -20,6 +20,11 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 
 	auto milli = GetTickCount64();
 
+
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<> dist(1, 20);
+
 	switch (special_item_id) 
 	{
 	case 0:
@@ -41,10 +46,6 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 3:
-		random_device rd;
-		mt19937 gen(rd());
-		uniform_int_distribution<> dist(1, 20);
-
 		for (int i = 0; i < 10; i++)
 		{
 			Particle* bullet = new Particle();
@@ -77,6 +78,27 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			objects.push_back(p);
 		}
 
+		break;
+
+	case 4:
+		FriendlyNPC * fnpc = new FriendlyNPC();
+
+		objects.push_back(fnpc);
+
+		fnpc->SetCoord({ 11, 1 });
+		fnpc->SetNextCoord({ 11, 1 });
+
+		fnpc->setHealth(30);
+
+		fnpc->SetVelocity({ 0, 0 });
+		fnpc->SetSpeed(5);
+		fnpc->setOriginalSpeed(5);
+
+		fnpc->setWeapon(6);
+		fnpc->setAI(true);
+		fnpc->setMaster(player);
+		fnpc->setTarget(opponent);
+		
 		break;
 	}
 }

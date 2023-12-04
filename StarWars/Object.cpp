@@ -8,6 +8,9 @@ Object::Object(Vec2 coord, Vec2 nextCoord, Vec2 velocity, int speed) : coord(coo
 
 	this->original_speed = speed;
 	this->nextCoord = coord;
+
+	this->target = nullptr;
+	this->master = nullptr;
 }
 
 Vec2& Object::GetCoord()
@@ -117,6 +120,11 @@ Object* Object::getTarget()
 	return target;
 }
 
+Object* Object::getMaster()
+{
+	return master;
+}
+
 int Object::getOriginalSpeed()
 {
 	return original_speed;
@@ -130,4 +138,9 @@ void Object::setOriginalSpeed(int original_speed)
 void Object::setTarget(Object* target)
 {
 	this->target = target;
+}
+
+void Object::setMaster(Object* master)
+{
+	this->master = master;
 }

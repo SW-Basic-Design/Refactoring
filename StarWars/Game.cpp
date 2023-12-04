@@ -37,10 +37,10 @@ void Game::MakePlayer()
 	objects.push_back(player2);
 
 	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 1 });
+	player2->SetCoord({ 25, 2 });
 
 	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 1 });
+	player2->SetNextCoord({ 25, 2 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
@@ -601,6 +601,33 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 
 		// If current is out of bounds or is 1 or visited, skip it
 		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
+
+		if (ai->size == 9)
+		{
+			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y - 1][x] != nullptr && Curmap[y - 1][x]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y][x - 1] != nullptr && Curmap[y][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y][x + 1] != nullptr && Curmap[y][x + 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x - 1] != nullptr && Curmap[y + 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x] != nullptr && Curmap[y + 1][x]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x + 1] != nullptr && Curmap[y + 1][x + 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+		}
 
 		random_device rd_variable;
 		mt19937 generate(rd_variable());

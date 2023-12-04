@@ -13,6 +13,7 @@ public:
 	DroppedSpecialItem(int i_id);
 	~DroppedSpecialItem() = default;
 	void useItem(Object* itemuser, Object * elseuser, vector< Object*>& objects);
+	int getSpecialItemId();
 private:
 	int special_item_id; // item id , 0 : heal, 1 : speed up, 3 : freeze;
 };

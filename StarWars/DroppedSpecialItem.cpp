@@ -102,3 +102,8 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 	}
 }
+
+int DroppedSpecialItem::getSpecialItemId()
+{
+	return special_item_id;
+}

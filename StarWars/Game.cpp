@@ -104,7 +104,7 @@ void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(0, Game::SPECIAL_ITEM_COUNT - 1);
+	uniform_int_distribution<> IsItem(1, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(3, 3);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -226,11 +226,7 @@ void Game::UpdateObjects()
 
 			if (ai->GetObjectType() == ObjectType::FRIENDLY_NPC && ai->getHealth() <= 0)
 			{
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
-
+				(*it)->should_delete = true;
 				continue;
 			}
 
@@ -277,12 +273,7 @@ void Game::UpdateObjects()
 			Wall* wall = (Wall*)*it;
 			
 			if (wall->getHealth() <= 0)
-			{
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
-			}
+				(*it)->should_delete = true;
 
 			continue;
 		}
@@ -303,13 +294,10 @@ void Game::UpdateObjects()
 			}
 
 			if (player->GetHitTimer() > 0)
-			{
 				player->SetHitTimer(player->GetHitTimer() - 1);
-			}
+
 			else
-			{
 				player->is_attacked = false;
-			}
 
 			if (player->isFreeze)
 			{
@@ -345,15 +333,8 @@ void Game::UpdateObjects()
 				}
 
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
-				{
 					if (*it2 == bullet)
-						it2 = objects.erase(it2);
-
-					if (it2 == objects.end())
-						break;
-				}
-
-				continue;
+						(*it2)->should_delete = true;
 			}
 
 			if (next_y <= 0 || next_y >= 19 || next_x <= 0 || next_x >= 40)
@@ -376,18 +357,21 @@ void Game::UpdateObjects()
 			PlayerCharacter* p2 = (PlayerCharacter*)(objects[1]);
 
 			if (item->GetCoord() == objects[0]->GetCoord())
+			{
 				item->useItem(objects[0], objects[1], objects);
+			}
 
 			else if (item->GetCoord() == objects[1]->GetCoord())
+			{
 				item->useItem(objects[1], objects[0], objects);
+			}
 
 			else
 				continue;
 
-			it = objects.erase(it);
-			
+			item->should_delete = true;
 
-			if (it == objects.end())
+			if (item->GetObjectType() == ObjectType::DROPPED_SPECIAL_ITEM && (((DroppedSpecialItem*)item)->getSpecialItemId() == 3 || ((DroppedSpecialItem*)item)->getSpecialItemId() == 4))
 				break;
 
 			continue;
@@ -404,11 +388,7 @@ void Game::UpdateObjects()
 
 			if (bullet->current_range >= bullet->max_range || !(0 <= next_x && next_x <= 40) || !(0 <= next_y && next_y <= 19))
 			{
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
-
+				(*it)->should_delete = true;
 				continue;
 			}
 
@@ -423,11 +403,7 @@ void Game::UpdateObjects()
 				Wall* wall = static_cast<Wall*>(obj);
 
 				wall->giveDamage(bullet->getDamage());
-
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
+				(*it)->should_delete = true;
 
 				continue;
 			}
@@ -445,10 +421,7 @@ void Game::UpdateObjects()
 					this->gameOver = true;
 				}
 
-				it = objects.erase(it);
-
-				if (it == objects.end())
-					break;
+				(*it)->should_delete = true;
 
 				continue;
 			}
@@ -469,6 +442,15 @@ void Game::UpdateObjects()
 	{
 		p1->SetNextCoord(p1->GetCoord());
 		p2->SetNextCoord(p2->GetCoord());
+	}
+
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		if ((*it)->should_delete)
+			it = objects.erase(it);
+
+		if (it == objects.end())
+			break;
 	}
 }
 

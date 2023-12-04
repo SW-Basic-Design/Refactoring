@@ -43,6 +43,7 @@ public:
 	void setOriginalSpeed(int);
 	void setTarget(Object*);
 	void setMaster(Object*);
+	int should_delete = false;
 protected:
 	ObjectType object_type = ObjectType::OBJECT;
 	Vec2 coord;

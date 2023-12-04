@@ -17,7 +17,8 @@
 class Game {
 public:
 	Game(bool gameOver);
-	void MakeMap();
+	void MakeBossMap();
+	void MakeMap(int);
 	void MakePlayer();
 	void replacePlayer();
 	void MakeItem();

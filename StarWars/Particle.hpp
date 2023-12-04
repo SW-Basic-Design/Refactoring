@@ -18,6 +18,7 @@ public:
 	bool isShotgun;
 	bool isBombing;
 	bool isHatoken;
+	Vec2 bullet_direction = { 0, 0 };
 private:
 	int damage;//1~5 : Low, 6 ~ 10 Mid, 11 ~ High
 };

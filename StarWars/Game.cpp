@@ -5,7 +5,32 @@ Game::Game(bool gameOver) :gameOver(gameOver)
 	this->objects = std::vector<Object*>();
 }
 
-void Game::MakeMap()
+void Game::MakeBossMap()
+{
+	MakeMap(1);
+
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		if (Curmap[y][WIDTH / 2] != nullptr && Curmap[y][WIDTH / 2]->GetObjectType() == ObjectType::WALL)
+		{
+			((Wall*)Curmap[y][WIDTH / 2])->setHealth(INT_MAX);
+		}
+
+		else
+		{
+			Wall* wall = new Wall();
+
+			wall->SetCoord({ WIDTH / 2, y });
+			wall->SetNextCoord(wall->GetCoord());
+			wall->setHealth(INT_MAX);
+
+			objects.push_back(wall);
+			Curmap[y][WIDTH / 2] = wall;
+		}
+	}
+}
+
+void Game::MakeMap(int map_index)
 {
 	for (int y = 0; y < HEIGHT; ++y)
 	{
@@ -63,8 +88,8 @@ void Game::MakePlayer()
 
 void Game::replacePlayer()
 {
-	PlayerCharacter* player1 = (PlayerCharacter * )objects[0];
-	PlayerCharacter* player2 = (PlayerCharacter * )objects[1];
+	PlayerCharacter* player1 = (PlayerCharacter*)objects[0];
+	PlayerCharacter* player2 = (PlayerCharacter*)objects[1];
 
 	player1->SetCoord({ 9, HEIGHT / 2 });
 	player2->SetCoord({ 31, HEIGHT / 2 });
@@ -79,6 +104,7 @@ void Game::replacePlayer()
 	{
 		player1->setHealth(100);
 	}
+
 	if (player2->getHealth() <= 0)
 	{
 		player2->setHealth(100);
@@ -258,7 +284,7 @@ void Game::UpdateObjects()
 				{
 					int target_x_2 = (*it2)->GetCoord().getX();
 					int target_y_2 = (*it2)->GetCoord().getY();
-				
+
 					double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
 
 					if (ai_opponent->getHealth() <= 0)
@@ -270,7 +296,7 @@ void Game::UpdateObjects()
 						ai->setTarget(*it2);
 				}
 			}
-		
+
 			getShortestWay((*it), (*it)->getTarget());
 
 			if (shouldShoot(*it))
@@ -285,7 +311,7 @@ void Game::UpdateObjects()
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 		{
 			Wall* wall = (Wall*)*it;
-			
+
 			if (wall->getHealth() <= 0)
 				(*it)->should_delete = true;
 
@@ -332,7 +358,7 @@ void Game::UpdateObjects()
 
 			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::PARTICLE)
 			{
-				Particle* bullet = (Particle *)Curmap[next_y][next_x];
+				Particle* bullet = (Particle*)Curmap[next_y][next_x];
 
 				if (bullet->shooter == *it)
 					continue;
@@ -424,7 +450,7 @@ void Game::UpdateObjects()
 
 			if (obj->IsCollisionWith(*it) && bullet->shooter != obj && !obj->IsItem() && obj->GetObjectType() != ObjectType::PARTICLE)
 			{
-				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
+				Character* target = static_cast<Character*>(obj);
 
 				target->giveDamage(bullet->getDamage());
 				target->is_attacked = true;
@@ -434,6 +460,11 @@ void Game::UpdateObjects()
 				{
 					this->gameOver = true;
 				}
+
+				Vec2 nextCoord = target->GetCoord() + bullet->bullet_direction;
+
+				if (Curmap[nextCoord.getY()][nextCoord.getX()] == nullptr)
+					target->SetNextCoord(nextCoord);
 
 				(*it)->should_delete = true;
 
@@ -545,6 +576,7 @@ void Game::CharacterShoot(Character* character)
 	{
 		Particle* p = new Particle();
 
+		p->bullet_direction = character->direction;
 		p->SetSpeed(character->getWeaponSpeed());
 		p->setDamage(character->getWeaponDamage());
 		p->shooter = character;
@@ -613,6 +645,33 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 
 		// If current is out of bounds or is 1 or visited, skip it
 		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
+
+		if (ai->size == Vec2{ 3,3 })
+		{
+			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y - 1][x] != nullptr && Curmap[y - 1][x]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y][x - 1] != nullptr && Curmap[y][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y][x + 1] != nullptr && Curmap[y][x + 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x - 1] != nullptr && Curmap[y + 1][x - 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x] != nullptr && Curmap[y + 1][x]->GetObjectType() == ObjectType::WALL)
+				continue;
+
+			if (Curmap[y + 1][x + 1] != nullptr && Curmap[y + 1][x + 1]->GetObjectType() == ObjectType::WALL)
+				continue;
+		}
 
 		random_device rd_variable;
 		mt19937 generate(rd_variable());
@@ -712,7 +771,7 @@ bool Game::shouldShoot(Object* ai)
 	return false;
 }
 
-Object * Game::getGameOverPlayer()
+Object* Game::getGameOverPlayer()
 {
 	if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
 	{

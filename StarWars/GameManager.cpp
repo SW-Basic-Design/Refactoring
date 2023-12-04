@@ -78,7 +78,7 @@ void GameManager::GetPlayerKeyInput()
 		player1->GetVelocity().setX(0);
 
 	if (GetAsyncKeyState(0x47))
-		game->PlayerShoot(player1);
+		game->CharacterShoot(player1);
 
 	if (GetAsyncKeyState(VK_LEFT))
 	{
@@ -96,7 +96,7 @@ void GameManager::GetPlayerKeyInput()
 		player2->GetVelocity().setX(0);
 
 	if (GetAsyncKeyState(VK_NUMPAD5))
-		game->PlayerShoot(player2);
+		game->CharacterShoot(player2);
 
 	if (GetAsyncKeyState(0x57))
 	{

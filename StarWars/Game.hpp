@@ -33,11 +33,13 @@ public:
 	void getShortestWay(Object* start, Object* target);
 	Object * getGameOverPlayer();
 	bool isOutOfMap(Object* obj);
-	void PlayerShoot(Character* player);
+	void CharacterShoot(Character* player);
 	std::vector<Object*>& GetObjects();
 	bool shouldShoot(Object* ai);
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
+	const int SPECIAL_ITEM_COUNT = 5;
+	const int WEAPON_COUNT = 7;
 	const int map[20][41] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},

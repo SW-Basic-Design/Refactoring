@@ -36,11 +36,11 @@ void Game::MakePlayer()
 	objects.push_back(player1);
 	objects.push_back(player2);
 
-	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 1 });
+	player1->SetCoord({ 9, HEIGHT / 2 });
+	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 1 });
+	player1->SetNextCoord({ 9, HEIGHT / 2 });
+	player2->SetNextCoord({ 31, HEIGHT / 2 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
@@ -66,11 +66,11 @@ void Game::replacePlayer()
 	PlayerCharacter* player1 = (PlayerCharacter * )objects[0];
 	PlayerCharacter* player2 = (PlayerCharacter * )objects[1];
 
-	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 1 });
+	player1->SetCoord({ 9, HEIGHT / 2 });
+	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 1 });
+	player1->SetNextCoord({ 9, HEIGHT / 2 });
+	player2->SetNextCoord({ 31, HEIGHT / 2 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });

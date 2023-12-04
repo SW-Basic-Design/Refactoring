@@ -76,7 +76,7 @@ void Game::MakePlayer()
 	player1->setOriginalSpeed(10);
 	player2->setOriginalSpeed(5);
 
-	player1->setWeapon(4);
+	player1->setWeapon(5);
 	player2->setWeapon(1);
 
 	player1->setTarget(player2);

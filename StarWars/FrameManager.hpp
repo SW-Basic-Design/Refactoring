@@ -22,7 +22,9 @@ public:
 	void SetCursorPosition(COORD);
 	COORD GetCursorPosition();
 	void MakeFrame(std::vector<Object*>&);
+	void PrintOutSideWalls();
 	void MakeStageOverFrame(std::vector<Object*>& objects, Object * dead_player, int flag);
+	void printDeadPlayerMove(Character* player);
 	void PrintStageOverMassage(int flag);
 	void PrintCountDown(int flag);
 	void drawStatus(Character* player1, Character* player2);

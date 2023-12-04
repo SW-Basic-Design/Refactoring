@@ -11,8 +11,8 @@ void GameManager::StartGame()
 	this->frameManager.InitFrame();
 
 	this->game->MakePlayer();
-	this->game->MakeBossMap();
-	//this->game->MakeMap();
+	//this->game->MakeBossMap();
+	this->game->MakeMap(0);
 	
 	this->game->difficulty = 5;
 
@@ -134,17 +134,20 @@ void GameManager::showGameOverScene()
 {
 	Object* dead_player = this->game->getGameOverPlayer();
 
+	this->frameManager.printDeadPlayerMove((PlayerCharacter *)dead_player);
+
 	for (int i = 0; i < 6; i++)
 	{
-		this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
+		//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
+		this->frameManager.PrintOutSideWalls();
 		this->frameManager.PrintStageOverMassage(i % 2);
 		this->frameManager.UpdateFrame();
 		Sleep(600);
 	}
 	
-	this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, 2);
-	this->frameManager.UpdateFrame();
-	Sleep(600);
+	//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, 2);
+	//this->frameManager.UpdateFrame();
+	//Sleep(600);
 
 	//여기에 ChangeMap 함수 삽입 필요
 

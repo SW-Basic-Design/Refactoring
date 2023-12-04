@@ -417,6 +417,160 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 	drawStatus((Character*)objects[0], (Character*)objects[1]);
 }
 
+void FrameManager::PrintOutSideWalls()
+{
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+
+	for (int y = 0; y < 20; y++)
+	{
+		for (int x = 0; x < 41; x++)
+		{
+			SetCursorPosition({ (short)(x * 2), (short)(y + 1) });
+			if (y != 0 && y != 19 && x != 0 && x != 40)
+				Print(" ");
+			else
+				Print("б█");
+		}
+	}
+}
+
+void FrameManager::printDeadPlayerMove(Character* player)
+{
+
+	int pos_x = player->GetCoord().getX();
+	int pos_y = player->GetCoord().getY();
+
+	int dx, dy;
+	if (pos_x < 20)
+		dx = 1;
+	else if (pos_x > 20)
+		dx = -1;
+	else
+		dx = 0;
+
+	if (pos_y < 10)
+		dy = 1;
+	else if (pos_y > 10)
+		dy = -1;
+	else
+		dy = 0;
+
+
+	while (pos_x != 20)
+	{
+		Sleep(25);
+		for (int y = 0; y < 20; y++)
+		{
+			for (int x = 0; x < 41; x++)
+			{
+				SetCursorPosition({ (short)(x * 2), (short)(y + 1) });
+				if (y != 0 && y != 19 && x != 0 && x != 40)
+					Print(" ");
+				else
+					Print("б█");
+			}
+		}
+
+		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		Print("бр");
+		UpdateFrame();
+
+		pos_x += dx;
+	}
+
+	while (pos_y != 10)
+	{
+		Sleep(25);
+		PrintOutSideWalls();
+		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		Print("бр");
+		UpdateFrame();
+
+		pos_y += dy;
+	}
+
+	Sleep(100);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+	Print("бс");
+	UpdateFrame();
+
+	Sleep(100);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+	Print("бр");
+	UpdateFrame();
+
+	Sleep(100);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+	Print("бс");
+	UpdateFrame();
+
+	Sleep(100);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+	Print("бр");
+	UpdateFrame();
+
+	Sleep(100);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
+	Print("бс");
+	UpdateFrame();
+
+	Sleep(300);
+	PrintOutSideWalls();
+	SetCursorPosition({ (short)((pos_x) * 2), (short)(19 - (pos_y - 1)) });
+	Print("б┌");
+	UpdateFrame();
+
+	Sleep(500);
+	PrintOutSideWalls();
+	for (int i = -1; i <= 1; i++)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			SetCursorPosition({ (short)((pos_x + j) * 2), (short)(19 - (pos_y - 1 + i)) });
+			if ((i != 0 && j != 0) || (i == 0 && j == 0))
+			{
+				Print("жл");
+			}
+
+
+		}
+	}
+	UpdateFrame();
+
+	Sleep(600);
+	PrintOutSideWalls();
+	for (int i = -1; i <= 1; i++)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			SetCursorPosition({ (short)((pos_x + j) * 2), (short)(19 - (pos_y - 1 + i)) });
+			if ((i != 0 && j != 0) || (i == 0 && j == 0))
+			{
+				Print("бд");
+			}
+
+
+		}
+	}
+	UpdateFrame();
+
+	Sleep(300);
+	PrintOutSideWalls();
+	UpdateFrame();
+
+	Sleep(300);
+
+}
+
 int FrameManager::gameOverMassage[20][41] = {
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -442,6 +596,7 @@ int FrameManager::gameOverMassage[20][41] = {
 
 void FrameManager::PrintStageOverMassage(int flag)
 {
+
 	for (int y = 0; y < 20; y++)
 	{
 		for (int x = 0; x < 41; x++)

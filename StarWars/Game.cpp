@@ -5,7 +5,32 @@ Game::Game(bool gameOver) :gameOver(gameOver)
 	this->objects = std::vector<Object*>();
 }
 
-void Game::MakeMap()
+void Game::MakeBossMap()
+{
+	MakeMap(1);
+
+	for (int y = 0; y < HEIGHT; ++y)
+	{
+		if (Curmap[y][WIDTH / 2] != nullptr && Curmap[y][WIDTH / 2]->GetObjectType() == ObjectType::WALL)
+		{
+			((Wall*)Curmap[y][WIDTH / 2])->setHealth(INT_MAX);
+		}
+
+		else
+		{
+			Wall* wall = new Wall();
+
+			wall->SetCoord({ WIDTH / 2, y });
+			wall->SetNextCoord(wall->GetCoord());
+			wall->setHealth(INT_MAX);
+
+			objects.push_back(wall);
+			Curmap[y][WIDTH / 2] = wall;
+		}
+	}
+}
+
+void Game::MakeMap(int map_index)
 {
 	for (int y = 0; y < HEIGHT; ++y)
 	{
@@ -37,10 +62,10 @@ void Game::MakePlayer()
 	objects.push_back(player2);
 
 	player1->SetCoord({ 10, 1 });
-	player2->SetCoord({ 25, 2 });
+	player2->SetCoord({ 25, 1 });
 
 	player1->SetNextCoord({ 10, 1 });
-	player2->SetNextCoord({ 25, 2 });
+	player2->SetNextCoord({ 25, 1 });
 
 	player1->SetVelocity({ 0, 0 });
 	player2->SetVelocity({ 0, 0 });
@@ -79,6 +104,7 @@ void Game::replacePlayer()
 	{
 		player1->setHealth(100);
 	}
+
 	if (player2->getHealth() <= 0)
 	{
 		player2->setHealth(100);
@@ -423,7 +449,7 @@ void Game::UpdateObjects()
 
 				Vec2 nextCoord = target->GetCoord() + bullet->bullet_direction;
 
-				if(Curmap[nextCoord.getY()][nextCoord.getX()] == nullptr)
+				if (Curmap[nextCoord.getY()][nextCoord.getX()] == nullptr)
 					target->SetNextCoord(nextCoord);
 
 				(*it)->should_delete = true;
@@ -602,7 +628,7 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 		// If current is out of bounds or is 1 or visited, skip it
 		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
 
-		if (ai->size == 9)
+		if (ai->size == Vec2{ 3,3 })
 		{
 			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
 				continue;

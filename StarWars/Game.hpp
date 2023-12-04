@@ -17,7 +17,8 @@
 class Game {
 public:
 	Game(bool gameOver);
-	void MakeMap();
+	void MakeBossMap();
+	void MakeMap(int);
 	void MakePlayer();
 	void replacePlayer();
 	void MakeItem();
@@ -62,6 +63,7 @@ public:
 	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};
+
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
 	int difficulty = 0;

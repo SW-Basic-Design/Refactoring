@@ -16,3 +16,8 @@ int Wall::getHealth()
 {
 	return health;
 }
+
+void Wall::setHealth(int health)
+{
+	this->health = health;
+}

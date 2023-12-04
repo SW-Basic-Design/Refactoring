@@ -11,7 +11,8 @@ void GameManager::StartGame()
 	this->frameManager.InitFrame();
 
 	this->game->MakePlayer();
-	this->game->MakeMap();
+	this->game->MakeBossMap();
+	//this->game->MakeMap();
 	
 	this->game->difficulty = 10;
 

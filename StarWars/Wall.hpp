@@ -11,6 +11,7 @@ public:
 	~Wall() = default;
 	void giveDamage(const int damage);
 	int getHealth();
+	void setHealth(int);
 private :
 	int health;
 };

@@ -297,7 +297,9 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 	if (objects[0] == dead_player)
 	{
-		if(flag != 2)
+		if(flag == 0 )
+			Print("бр");
+		else
 			Print("бс");
 	}
 	else
@@ -316,7 +318,9 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 	if (objects[1] == dead_player)
 	{
-		if(flag != 2)
+		if (flag == 0)
+			Print("бр");
+		else
 			Print("бс");
 	}
 	else
@@ -360,7 +364,7 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 			if (((Particle*)*it)->isBombing)
 			{
-				Print("@");
+				Print("в┴");
 				break;
 			}
 

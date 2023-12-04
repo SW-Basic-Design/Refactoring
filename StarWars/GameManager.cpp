@@ -13,7 +13,7 @@ void GameManager::StartGame()
 	this->game->MakePlayer();
 	this->game->MakeMap();
 	
-	this->game->difficulty = 10;
+	this->game->difficulty = 5;
 
 	while (PrecedeGame())
 	{
@@ -147,7 +147,20 @@ void GameManager::showGameOverScene()
 
 	//여기에 ChangeMap 함수 삽입 필요
 
+
+	GetAsyncKeyState(0x41);
+	GetAsyncKeyState(0x44);
+	GetAsyncKeyState(0x47);
+	GetAsyncKeyState(VK_LEFT);
+	GetAsyncKeyState(VK_RIGHT);
+	GetAsyncKeyState(VK_NUMPAD5);
+	GetAsyncKeyState(0x57);
+	GetAsyncKeyState(VK_UP);
+	GetAsyncKeyState(0x53);
+	GetAsyncKeyState(VK_DOWN);
+
 	this->game->replacePlayer();
+	this->game->removeParticles();
 
 	for (int i = 0; i < 5; i++)
 	{

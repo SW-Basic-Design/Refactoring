@@ -93,18 +93,32 @@ void Game::replacePlayer()
 			((Character*)*it)->setHealth(0);
 
 			it = objects.erase(it);
-
-			if (it == objects.end())
-				break;
+			--it;
 		}
 	}
+}
+
+void Game::removeParticles()
+{
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		Object* obj = *it;
+
+		if (obj->GetObjectType() == ObjectType::PARTICLE) 
+		{
+			it = objects.erase(it);
+			--it;
+		}
+	}
+
+	this->UpdateMap();
 }
 
 void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(1, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(3, 3);
+	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(0, Game::SPECIAL_ITEM_COUNT - 1);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -447,10 +461,11 @@ void Game::UpdateObjects()
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
 		if ((*it)->should_delete)
+		{
 			it = objects.erase(it);
-
-		if (it == objects.end())
-			break;
+			--it;
+		}
+			
 	}
 }
 

@@ -63,8 +63,8 @@ void Game::MakePlayer()
 
 void Game::replacePlayer()
 {
-	PlayerCharacter* player1 = (PlayerCharacter * )objects[0];
-	PlayerCharacter* player2 = (PlayerCharacter * )objects[1];
+	PlayerCharacter* player1 = (PlayerCharacter*)objects[0];
+	PlayerCharacter* player2 = (PlayerCharacter*)objects[1];
 
 	player1->SetCoord({ 10, 1 });
 	player2->SetCoord({ 25, 1 });
@@ -244,7 +244,7 @@ void Game::UpdateObjects()
 				{
 					int target_x_2 = (*it2)->GetCoord().getX();
 					int target_y_2 = (*it2)->GetCoord().getY();
-				
+
 					double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
 
 					if (ai_opponent->getHealth() <= 0)
@@ -256,7 +256,7 @@ void Game::UpdateObjects()
 						ai->setTarget(*it2);
 				}
 			}
-		
+
 			getShortestWay((*it), (*it)->getTarget());
 
 			if (shouldShoot(*it))
@@ -271,7 +271,7 @@ void Game::UpdateObjects()
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 		{
 			Wall* wall = (Wall*)*it;
-			
+
 			if (wall->getHealth() <= 0)
 				(*it)->should_delete = true;
 
@@ -318,7 +318,7 @@ void Game::UpdateObjects()
 
 			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::PARTICLE)
 			{
-				Particle* bullet = (Particle *)Curmap[next_y][next_x];
+				Particle* bullet = (Particle*)Curmap[next_y][next_x];
 
 				if (bullet->shooter == *it)
 					continue;
@@ -410,7 +410,7 @@ void Game::UpdateObjects()
 
 			if (obj->IsCollisionWith(*it) && bullet->shooter != obj && !obj->IsItem() && obj->GetObjectType() != ObjectType::PARTICLE)
 			{
-				PlayerCharacter* target = static_cast<PlayerCharacter*>(obj);
+				Character* target = static_cast<Character*>(obj);
 
 				target->giveDamage(bullet->getDamage());
 				target->is_attacked = true;
@@ -420,6 +420,11 @@ void Game::UpdateObjects()
 				{
 					this->gameOver = true;
 				}
+
+				Vec2 nextCoord = target->GetCoord() + bullet->bullet_direction;
+
+				if(Curmap[nextCoord.getY()][nextCoord.getX()] == nullptr)
+					target->SetNextCoord(nextCoord);
 
 				(*it)->should_delete = true;
 
@@ -527,6 +532,7 @@ void Game::CharacterShoot(Character* character)
 	{
 		Particle* p = new Particle();
 
+		p->bullet_direction = character->direction;
 		p->SetSpeed(character->getWeaponSpeed());
 		p->setDamage(character->getWeaponDamage());
 		p->shooter = character;
@@ -694,7 +700,7 @@ bool Game::shouldShoot(Object* ai)
 	return false;
 }
 
-Object * Game::getGameOverPlayer()
+Object* Game::getGameOverPlayer()
 {
 	if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
 	{

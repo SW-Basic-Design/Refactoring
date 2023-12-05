@@ -64,6 +64,8 @@ void Game::MakePlayer()
 	player1->SetCoord({ 9, HEIGHT / 2 });
 	player2->SetCoord({ 31, HEIGHT / 2 });
 
+	player1->setHealth(99999);
+
 	player1->SetNextCoord({ 9, HEIGHT / 2 });
 	player2->SetNextCoord({ 31, HEIGHT / 2 });
 
@@ -533,6 +535,12 @@ void Game::UpdateObjects()
 						int next_y = nextCoord.getY() + j;
 						int next_x = nextCoord.getX() + i;
 
+						if (next_x < 0 || next_x >= WIDTH || next_y < 0 || next_y >= HEIGHT)
+						{
+							count += 1;
+							continue;
+						}
+
 						Object* obj = Curmap[nextCoord.getY() + j][nextCoord.getX() + i];
 
 						if (obj == nullptr || (obj != nullptr && obj->GetObjectType() != ObjectType::WALL))
@@ -753,32 +761,30 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 		// If current is out of bounds or is 1 or visited, skip it
 		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
 
-		if (ai->size == Vec2{ 3,3 })
+		bool skip = false;
+
+		for (int i = -ai->size.getX() / 2; i <= ai->size.getX() / 2; ++i)
 		{
-			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
-				continue;
+			for (int j = -ai->size.getY() / 2; j <= ai->size.getY() / 2; ++j)
+			{
+				int next_y = y + j;
+				int next_x = x + i;
 
-			if (Curmap[y - 1][x] != nullptr && Curmap[y - 1][x]->GetObjectType() == ObjectType::WALL)
-				continue;
+				if (next_x < 0 || next_x >= WIDTH || next_y < 0 || next_y >= HEIGHT)
+					continue;
 
-			if (Curmap[y - 1][x - 1] != nullptr && Curmap[y - 1][x - 1]->GetObjectType() == ObjectType::WALL)
-				continue;
+				Object* obj = Curmap[next_y][next_x];
 
-			if (Curmap[y][x - 1] != nullptr && Curmap[y][x - 1]->GetObjectType() == ObjectType::WALL)
-				continue;
-
-			if (Curmap[y][x + 1] != nullptr && Curmap[y][x + 1]->GetObjectType() == ObjectType::WALL)
-				continue;
-
-			if (Curmap[y + 1][x - 1] != nullptr && Curmap[y + 1][x - 1]->GetObjectType() == ObjectType::WALL)
-				continue;
-
-			if (Curmap[y + 1][x] != nullptr && Curmap[y + 1][x]->GetObjectType() == ObjectType::WALL)
-				continue;
-
-			if (Curmap[y + 1][x + 1] != nullptr && Curmap[y + 1][x + 1]->GetObjectType() == ObjectType::WALL)
-				continue;
+				if (obj != nullptr && obj->GetObjectType() == ObjectType::WALL)
+				{
+					skip = true;
+					break;
+				}
+			}
 		}
+
+		if (skip)
+			continue;
 
 		random_device rd_variable;
 		mt19937 generate(rd_variable());

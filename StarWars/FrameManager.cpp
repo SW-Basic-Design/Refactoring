@@ -781,7 +781,7 @@ void FrameManager::PrintBossHealth(Object* obj, int index)
 
 	SetCursorPosition({ (short)(51 * index + 1), 29 });
 	Print("BOSS : ");
-	for (int i = 0; i <= 100; i += 10)
+	for (int i = 0; i <= 300; i += 30)
 	{
 		if (boss->getHealth() >= i && boss->getHealth() != 0)
 		{

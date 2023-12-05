@@ -1,11 +1,11 @@
 #include "DroppedSpecialItem.hpp"
 
-DroppedSpecialItem::DroppedSpecialItem() : DroppedSpecialItem(0)
+DroppedSpecialItem::DroppedSpecialItem() : DroppedSpecialItem(0) 
 {
 
 }
 
-DroppedSpecialItem::DroppedSpecialItem(int item_id) : DroppedItem() 
+DroppedSpecialItem::DroppedSpecialItem(int item_id) : DroppedItem()
 {
 	this->object_type = ObjectType::DROPPED_SPECIAL_ITEM;
 
@@ -25,7 +25,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 	mt19937 gen(rd());
 	uniform_int_distribution<> dist(1, 20);
 
-	switch (special_item_id) 
+	switch (special_item_id)
 	{
 	case 0:
 		player->addHealth(PLAYER_MAX_HEALTH * 30 / 100);
@@ -37,7 +37,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		player->current_buff = 1;
 		player->buff_start = milli;
 		break;
-	
+
 	case 2:
 		opponent->setBuffTimer(2000);
 		opponent->isFreeze = true;
@@ -55,7 +55,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 			bullet->SetSpeed(1);
 			bullet->setDamage(5);
 			bullet->max_range = 50;
-			bullet->SetCoord({ dist(gen), 19});
+			bullet->SetCoord({ dist(gen), 19 });
 			bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 1, -1 });
 			bullet->SetVelocity(Vec2{ 1, -1 });
 
@@ -85,8 +85,11 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 
 		objects.push_back(fnpc);
 
-		fnpc->SetCoord({ 11, 1 });
-		fnpc->SetNextCoord({ 11, 1 });
+		Vec2 coord = user_1->GetCoord();
+
+		fnpc->SetCoord(coord + Vec2{ 0, 1 });
+
+		fnpc->SetNextCoord(fnpc->GetCoord());
 
 		fnpc->setHealth(30);
 
@@ -98,7 +101,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		fnpc->setAI(true);
 		fnpc->setMaster(player);
 		fnpc->setTarget(opponent);
-		
+
 		break;
 	}
 }

@@ -7,7 +7,7 @@ Game::Game(bool gameOver) :gameOver(gameOver)
 
 void Game::MakeBossMap()
 {
-	MakeMap(1);
+	MakeMap(current_stage >= 3 ? 8 : current_stage * 3 + 1);
 
 	for (int y = 0; y < HEIGHT; ++y)
 	{
@@ -645,7 +645,7 @@ void Game::SummonBoss()
 		boss->SetCoord({ i * 20 + 11, 11 });
 		boss->SetNextCoord(boss->GetCoord());
 
-		boss->setHealth(30);
+		boss->setHealth(300);
 
 		boss->SetVelocity({ 0, 0 });
 		boss->SetSpeed(3);
@@ -886,25 +886,20 @@ bool Game::shouldShoot(Object* ai)
 
 Object* Game::getGameOverPlayer()
 {
-	if (current_stage % 2 == 0)
+	if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
+		return(objects[0]);
+
+	else if (((PlayerCharacter*)objects[1])->getHealth() <= 0)
+		return(objects[1]);
+
+
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
-		if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
-			return(objects[0]);
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0])
+			return objects[1];
 
-		else
-			return(objects[1]);
-	}
-
-	else
-	{
-		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
-		{
-			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0])
-				return objects[1];
-
-			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1])
-				return objects[0];
-		}
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1])
+			return objects[0];
 	}
 
 	return objects[0];

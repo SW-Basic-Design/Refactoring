@@ -9,6 +9,7 @@
 #include "DroppedSpecialItem.hpp"
 #include "Wall.hpp"
 #include "FriendlyNPC.hpp"
+#include "EnemyNPC.hpp"
 #include <queue>
 
 #ifndef GAME_HPP
@@ -24,12 +25,15 @@ public:
 	void MakeItem();
 	Vec2 SetItemCoord();
 	bool IsGameOver();
+	bool IsStageOver();
 	void SetGameOver(bool);
+	void SetStageOver(bool);
 	void UpdateObjectNextPosition();
 	void UpdateSingleObjectNextPosition(Object*);
 	void UpdateObjectPosition();
 	void UpdateObjects();
 	void UpdateMap();
+	void SummonBoss();
 	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);
 	Object * getGameOverPlayer();
@@ -42,6 +46,7 @@ public:
 	const int HEIGHT = 20;
 	const int SPECIAL_ITEM_COUNT = 5;
 	const int WEAPON_COUNT = 7;
+	int current_stage = 0;
 	const int map[1][20][41] = {
 		{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -68,12 +73,14 @@ public:
 
 
 		};
+
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
 	int difficulty = 0;
 
 private:
 	bool gameOver;
+	bool stageOver;
 	std::vector<Object*> objects;
 };
 

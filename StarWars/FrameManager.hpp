@@ -4,6 +4,7 @@
 #include "Object.hpp"
 #include "PlayerCharacter.hpp"
 #include "Particle.hpp"
+#include "EnemyNPC.hpp"
 #include <string>
 
 #ifndef FRAME_MANAGER_HPP
@@ -20,6 +21,7 @@ public:
 	void UpdateFrame();
 	void ClearBuffer();
 	void SetCursorPosition(COORD);
+	void PrintBossHealth(Object*, int);
 	COORD GetCursorPosition();
 	void MakeFrame(std::vector<Object*>&);
 	void PrintOutSideWalls();

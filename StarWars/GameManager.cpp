@@ -14,7 +14,7 @@ void GameManager::StartGame()
 	//this->game->MakeBossMap();
 	this->game->MakeMap(0);
 	
-	this->game->difficulty = 5;
+	this->game->difficulty = 0;
 
 	while (PrecedeGame())
 	{
@@ -28,32 +28,48 @@ bool GameManager::PrecedeGame()
 {
 	if (!this->game->IsGameOver())
 	{
-		auto milli = GetTickCount64();
-
-		if (last_item_SpawnTime + spawn_term < milli)
+		if (!this->game->IsStageOver())
 		{
-			last_item_SpawnTime = milli;
-			game->MakeItem();
+			auto milli = GetTickCount64();
+
+			if (last_item_SpawnTime + spawn_term < milli)
+			{
+				last_item_SpawnTime = milli;
+				game->MakeItem();
+			}
+
+			this->game->UpdateObjects();
+			this->game->UpdateObjectPosition();
+			this->game->UpdateMap();
+
+			this->frameManager.MakeFrame(this->game->GetObjects());
+			this->frameManager.UpdateFrame();
 		}
 
-		this->game->UpdateObjects();
-		this->game->UpdateObjectPosition();
-		this->game->UpdateMap();
+		else 
+		{
+			if (game->current_stage % 2 == 0)
+			{
+				PlayerCharacter* loser = (PlayerCharacter*)this->game->getGameOverPlayer();
+				loser->life -= 1;
+			}
 
-		this->frameManager.MakeFrame(this->game->GetObjects());
-		this->frameManager.UpdateFrame();
+			this->showStageOverScene();
 
+			this->resetStage();
+
+			this->gotoNextStage();
+
+			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
+			{
+				this->game->SetGameOver(true);
+			}
+
+			this->game->SetStageOver(false);
+		}
 
 		return true;
 	}
-
-	this->showGameOverScene();
-	if (((Character*)this->game->GetObjects()[0])->life > 0 && ((Character*)this->game->GetObjects()[1])->life > 0)
-	{
-		this->game->SetGameOver(false);
-		return true;
-	}
-
 
 	return false;
 }
@@ -130,7 +146,7 @@ void GameManager::GetPlayerKeyInput()
 		player2->GetVelocity().setY(0);
 }
 
-void GameManager::showGameOverScene()
+void GameManager::showStageOverScene()
 {
 	Object* dead_player = this->game->getGameOverPlayer();
 
@@ -151,7 +167,18 @@ void GameManager::showGameOverScene()
 
 	//여기에 ChangeMap 함수 삽입 필요
 
+	for (int i = 0; i < 5; i++)
+	{
+		this->frameManager.MakeFrame(this->game->GetObjects());
+		this->frameManager.PrintCountDown(i);
+		this->frameManager.UpdateFrame();
+		Sleep(1000);
+	}
 
+}
+
+void GameManager::resetStage()
+{
 	GetAsyncKeyState(0x41);
 	GetAsyncKeyState(0x44);
 	GetAsyncKeyState(0x47);
@@ -163,15 +190,42 @@ void GameManager::showGameOverScene()
 	GetAsyncKeyState(0x53);
 	GetAsyncKeyState(VK_DOWN);
 
+	this->removeAllComponents();
+
 	this->game->replacePlayer();
-	this->game->removeParticles();
+}
 
-	for (int i = 0; i < 5; i++)
+void GameManager::removeAllComponents()
+{
+	for (std::vector<Object*>::iterator it = this->game->GetObjects().begin() + 2; it != this->game->GetObjects().end(); ++it)
 	{
-		this->frameManager.MakeFrame(this->game->GetObjects());
-		this->frameManager.PrintCountDown(i);
-		this->frameManager.UpdateFrame();
-		Sleep(1000);
-	}
+		it = this->game->GetObjects().erase(it);
 
+		--it;
+	}
+}
+
+void GameManager::gotoNextStage()
+{
+	bool is_boss_stage = this->game->current_stage % 2 == 0;
+
+	if (is_boss_stage)
+		this->makeBossStage();
+
+	else 
+		this->makeNormalStage();
+
+	this->game->current_stage += 1;
+}
+
+void GameManager::makeNormalStage()
+{
+	this->game->MakeMap(1);
+}
+
+void GameManager::makeBossStage()
+{
+	this->game->MakeBossMap();
+
+	this->game->SummonBoss();
 }

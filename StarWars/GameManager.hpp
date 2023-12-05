@@ -19,13 +19,18 @@ public:
 	void StartGame();
 	bool PrecedeGame();
 	void GetPlayerKeyInput();
+	void resetStage();
+	void removeAllComponents();
+	void gotoNextStage();
+	void makeNormalStage();
+	void makeBossStage();
 	long long int last_item_SpawnTime;
 	const static int spawn_term = 15000;
 
 private:
 	FrameManager frameManager;
 	Game* game;
-	void showGameOverScene();
+	void showStageOverScene();
 };
 
 #endif

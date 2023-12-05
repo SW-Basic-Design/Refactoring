@@ -110,6 +110,9 @@ void Game::replacePlayer()
 		player2->setHealth(100);
 	}
 
+	player1->setTarget(player2);
+	player2->setTarget(player1);
+
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
 		Object* obj = *it;
@@ -238,6 +241,16 @@ void Game::SetGameOver(bool gameOver)
 	this->gameOver = gameOver;
 }
 
+bool Game::IsStageOver()
+{
+	return stageOver;
+}
+
+void Game::SetStageOver(bool stageOver)
+{
+	this->stageOver = stageOver;
+}
+
 std::vector<Object*>& Game::GetObjects()
 {
 	return this->objects;
@@ -260,6 +273,18 @@ void Game::UpdateObjects()
 
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && ((Character*)*it)->getHealth() <= 0)
+		{
+			stageOver = true;
+			break;
+		}
+
+		if ((*it)->GetObjectType() == ObjectType::PLAYER_CHARACTER && ((PlayerCharacter*)*it)->life <= 0)
+		{
+			gameOver = true;
+			break;
+		}
+
 		if ((*it)->IsCharacter() && ((Character*)*it)->IsAI())
 		{
 			Character* ai = static_cast<Character*>(*it);
@@ -280,7 +305,7 @@ void Game::UpdateObjects()
 
 			for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 			{
-				if ((*it2)->getTarget() == *it)
+				if ((*it2)->getTarget() == *it || (ai->getWeapon() == 0 && ((*it2)->GetObjectType() == ObjectType::DROPPED_SPECIAL_ITEM || (*it2)->GetObjectType() == ObjectType::DROPPED_WEAPON)))
 				{
 					int target_x_2 = (*it2)->GetCoord().getX();
 					int target_y_2 = (*it2)->GetCoord().getY();
@@ -299,7 +324,7 @@ void Game::UpdateObjects()
 
 			getShortestWay((*it), (*it)->getTarget());
 
-			if (shouldShoot(*it))
+			if (shouldShoot(*it) && !(*it)->getTarget()->IsItem())
 				CharacterShoot(ai);
 		}
 
@@ -369,7 +394,7 @@ void Game::UpdateObjects()
 
 				if (player->getHealth() <= 0)
 				{
-					this->gameOver = true;
+					this->stageOver = true;
 				}
 
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
@@ -383,7 +408,7 @@ void Game::UpdateObjects()
 
 				target->setHealth(0);
 
-				this->gameOver = true;
+				this->stageOver = true;
 
 				continue;
 			}
@@ -408,6 +433,42 @@ void Game::UpdateObjects()
 
 			else
 				continue;
+
+			if (p2->IsAI())
+			{
+				int ai_x = p2->GetCoord().getX();
+				int ai_y = p2->GetCoord().getY();
+
+				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+				{
+					if (!(*it2)->IsCharacter() || p2 == *it2)
+						continue;
+
+					if (p2->getTarget()->IsItem())
+					{
+						if ((*it2)->getTarget() == p2)
+							p2->setTarget(*it2);
+
+						break;
+					}
+
+					else
+					{
+						int target_x = p2->getTarget()->GetCoord().getX();
+						int target_y = p2->getTarget()->GetCoord().getY();
+
+						int target_x_2 = (*it2)->GetCoord().getX();
+						int target_y_2 = (*it2)->GetCoord().getY();
+
+						double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
+
+						double dist_2 = sqrt((ai_x - target_x_2) * (ai_x - target_x_2) + (ai_y - target_y_2) * (ai_y - target_y_2));
+
+						if (dist > dist_2)
+							p2->setTarget(*it2);
+					}
+				}
+			}
 
 			item->should_delete = true;
 
@@ -458,12 +519,28 @@ void Game::UpdateObjects()
 
 				if (obj->IsPlayer() && ((PlayerCharacter*)obj)->getHealth() <= 0)
 				{
-					this->gameOver = true;
+					this->stageOver = true;
 				}
 
 				Vec2 nextCoord = target->GetCoord() + bullet->bullet_direction;
 
-				if (Curmap[nextCoord.getY()][nextCoord.getX()] == nullptr)
+				int count = 0;
+
+				for (int i = -target->size.getX() / 2; i <= target->size.getX() / 2; ++i)
+				{
+					for (int j = -target->size.getY() / 2; j <= target->size.getY() / 2; ++j)
+					{
+						int next_y = nextCoord.getY() + j;
+						int next_x = nextCoord.getX() + i;
+
+						Object* obj = Curmap[nextCoord.getY() + j][nextCoord.getX() + i];
+
+						if (obj == nullptr || (obj != nullptr && obj->GetObjectType() != ObjectType::WALL))
+							count += 1;
+					}
+				}
+
+				if (count == target->size.getX() * target->size.getY())
 					target->SetNextCoord(nextCoord);
 
 				(*it)->should_delete = true;
@@ -532,26 +609,56 @@ bool Game::isOutOfMap(Object* obj)
 	{
 		return true;
 	}
+
 	else if (obj->GetNextCoord().getY() < 0)
 	{
 		return true;
 	}
+
 	else if (obj->GetNextCoord().getX() < 0)
 	{
 		return true;
 	}
+
 	else if (obj->GetNextCoord().getX() >= Game::WIDTH)
 	{
 		return true;
 	}
+
 	else if (obj->IsPlayer() && obj->GetNextCoord().getY() + 1 >= Game::HEIGHT)
 	{
 		return true;
 	}
+
 	else
 	{
 		return false;
 	}
+}
+
+void Game::SummonBoss()
+{
+	for (int i = 0; i < 2; ++i)
+	{
+		EnemyNPC* boss = new EnemyNPC();
+
+		boss->SetCoord({ i * 20 + 11, 11 });
+		boss->SetNextCoord(boss->GetCoord());
+
+		boss->setHealth(30);
+
+		boss->SetVelocity({ 0, 0 });
+		boss->SetSpeed(3);
+		boss->setOriginalSpeed(3);
+
+		boss->setWeapon(99);
+		boss->size = { 3, 3 };
+
+		boss->setTarget(objects[i]);
+		boss->setAI(true);
+
+		objects.push_back(boss);
+;	}
 }
 
 void Game::CharacterShoot(Character* character)
@@ -713,8 +820,14 @@ void Game::getShortestWay(Object* ai, Object* target)
 		}
 	}
 
-	if (shortest <= ai_character->getWeaponMaxRange() - 1 && (ai_character->GetCoord().getX() == target->GetCoord().getX() || ai_character->GetCoord().getY() == target->GetCoord().getY()))
-		ai_character->SetVelocity({ 0,0 });
+	if (ai_character->getWeapon() != 0)
+	{
+		if (shortest <= ai_character->getWeaponMaxRange() - 1 && (ai_character->GetCoord().getX() == target->GetCoord().getX() || ai_character->GetCoord().getY() == target->GetCoord().getY()))
+			ai_character->SetVelocity({ 0,0 });
+
+		else
+			ai_character->SetVelocity(bestway);
+	}
 
 	else
 		ai_character->SetVelocity(bestway);
@@ -759,7 +872,7 @@ bool Game::shouldShoot(Object* ai)
 
 	double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
 
-	if (dist > (double)ai_character->getWeaponMaxRange())
+	if (dist - 3 > (double)ai_character->getWeaponMaxRange())
 		return false;
 
 	if (ai_x == target_x)
@@ -773,12 +886,26 @@ bool Game::shouldShoot(Object* ai)
 
 Object* Game::getGameOverPlayer()
 {
-	if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
+	if (current_stage % 2 == 0)
 	{
-		return(objects[0]);
+		if (((PlayerCharacter*)objects[0])->getHealth() <= 0)
+			return(objects[0]);
+
+		else
+			return(objects[1]);
 	}
+
 	else
 	{
-		return(objects[1]);
+		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+		{
+			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0])
+				return objects[1];
+
+			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1])
+				return objects[0];
+		}
 	}
+
+	return objects[0];
 }

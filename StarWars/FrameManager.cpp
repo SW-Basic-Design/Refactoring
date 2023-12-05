@@ -83,7 +83,7 @@ void FrameManager::ClearBuffer()
 	for (int i = 0; i < WIDTH; ++i)
 		line[i] = ' ';
 
-	for (short i = 0; i < HEIGHT; ++i)
+	for (short i = 0; i < HEIGHT + 10; ++i)
 	{
 		this->SetCursorPosition({ 0, i });
 		WriteFile(this->frame.bufferHandler[this->frame.currentBufferIndex], line, WIDTH, nullptr, NULL);
@@ -117,7 +117,7 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 	Print("□");
 
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
-	
+
 	if (((PlayerCharacter*)objects[1])->isFreeze == true && ((PlayerCharacter*)objects[1])->is_attacked == true)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 	else if (((PlayerCharacter*)objects[1])->isFreeze == true)
@@ -126,7 +126,7 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 	else
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
-	
+
 	Print("□");
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
@@ -134,18 +134,18 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 	for (std::vector<Object*>::iterator it = objects.begin() + 2; it != objects.end(); ++it)
 	{
 		SetCursorPosition({ (short)((*it)->GetCoord().getX() * 2), (short)(20 - (*it)->GetCoord().getY()) });
-		
+
 		switch ((*it)->GetObjectType())
 		{
 		case ObjectType::WALL:
 			Print("○");
 			break;
-		case ObjectType::PARTICLE :
+		case ObjectType::PARTICLE:
 			if (((Particle*)*it)->isMelee)
 			{
 				if (((Particle*)*it)->getDamage() <= 5)//fist
 				{
-					if((*it)->GetVelocity().getX() >= 0)
+					if ((*it)->GetVelocity().getX() >= 0)
 						Print(" @");
 					else
 						Print("@ ");
@@ -205,15 +205,34 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 					Print("─");
 			}
 			break;
-		
-		case ObjectType::DROPPED_SPECIAL_ITEM : case ObjectType::DROPPED_WEAPON :
+
+		case ObjectType::DROPPED_SPECIAL_ITEM: case ObjectType::DROPPED_WEAPON:
 			Print("▣");
 			break;
 
 		case ObjectType::FRIENDLY_NPC:
 			Print("A");
 			break;
+
+		case ObjectType::ENEMY_NPC:
+			COORD c = GetCursorPosition();
+
+			for (int i = -1; i <= 1; ++i)
+			{
+				for (int j = -1; j <= 1; ++j)
+				{
+					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
+					Print("E");
+				}
+			}
+
+			if (objects[0] == (*it)->getTarget())
+				PrintBossHealth(*it, 0);
+
+			else
+				PrintBossHealth(*it, 1);
 		}
+
 
 	}
 
@@ -229,7 +248,7 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	Print(std::to_string(player1->life).c_str());
 	SetCursorPosition({ 1, 24 });
 	Print("체력 : ");
-	for (int i = 0; i <= 100; i += 10) 
+	for (int i = 0; i <= 100; i += 10)
 	{
 		if (player1->getHealth() >= i && player1->getHealth() != 0)
 		{
@@ -250,7 +269,7 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	Print("상태 : ");
 	Print(player1->getBuffName().c_str());
 
-	
+
 	SetCursorPosition({ 52, 22 });
 	Print("플레이어 2");
 	SetCursorPosition({ 52, 23 });
@@ -297,15 +316,15 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 	if (objects[0] == dead_player)
 	{
-		if(flag == 0 )
+		if (flag == 0)
 			Print("□");
 		else
 			Print("■");
 	}
 	else
 		Print("□");
-	
-	
+
+
 
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
 
@@ -436,7 +455,6 @@ void FrameManager::PrintOutSideWalls()
 
 void FrameManager::printDeadPlayerMove(Character* player)
 {
-
 	int pos_x = player->GetCoord().getX();
 	int pos_y = player->GetCoord().getY();
 
@@ -755,4 +773,23 @@ void FrameManager::PrintCountDown(int flag)
 		}
 	}
 
+}
+
+void FrameManager::PrintBossHealth(Object* obj, int index)
+{
+	EnemyNPC* boss = (EnemyNPC*)obj;
+
+	SetCursorPosition({ (short)(51 * index + 1), 29 });
+	Print("BOSS : ");
+	for (int i = 0; i <= 100; i += 10)
+	{
+		if (boss->getHealth() >= i && boss->getHealth() != 0)
+		{
+			Print("■");
+		}
+		else
+		{
+			Print("□");
+		}
+	}
 }

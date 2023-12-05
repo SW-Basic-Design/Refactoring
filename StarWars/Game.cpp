@@ -36,7 +36,7 @@ void Game::MakeMap(int map_index)
 	{
 		for (int x = 0; x < WIDTH; ++x)
 		{
-			if (map[0][HEIGHT - 1 - y][x] == 1)
+			if (map[map_index][HEIGHT - 1 - y][x] == 1)
 			{
 				Wall* wall = new Wall();
 

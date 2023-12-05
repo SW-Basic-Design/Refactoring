@@ -44,7 +44,7 @@ public:
 	bool shouldShoot(Object* ai);
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
-	const int SPECIAL_ITEM_COUNT = 5;
+	const int SPECIAL_ITEM_COUNT = 4;
 	const int WEAPON_COUNT = 7;
 	int current_stage = 0;
 	const int map[9][20][41] = {

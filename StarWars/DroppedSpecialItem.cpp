@@ -80,7 +80,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 
 		break;
 
-	case 4:
+	case 911:
 		FriendlyNPC * fnpc = new FriendlyNPC();
 
 		objects.push_back(fnpc);

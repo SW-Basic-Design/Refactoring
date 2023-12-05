@@ -11,8 +11,7 @@ void GameManager::StartGame()
 	this->frameManager.InitFrame();
 
 	this->game->MakePlayer();
-	//this->game->MakeBossMap();
-	this->game->MakeMap(0);
+	this->game->MakeMap(this->game->current_stage);
 	
 	this->game->difficulty = 0;
 
@@ -32,10 +31,22 @@ bool GameManager::PrecedeGame()
 		{
 			auto milli = GetTickCount64();
 
-			if (last_item_SpawnTime + spawn_term < milli)
+			if (this->game->current_stage % 2 == 0)
 			{
-				last_item_SpawnTime = milli;
-				game->MakeItem();
+				if (last_item_SpawnTime + spawn_term < milli)
+				{
+					last_item_SpawnTime = milli;
+					game->MakeItem();
+				}
+			}
+
+			else
+			{
+				if (last_item_SpawnTime + spawn_term / 2 < milli)
+				{
+					last_item_SpawnTime = milli;
+					game->MakeItem();
+				}
 			}
 
 			this->game->UpdateObjects();

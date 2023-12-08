@@ -149,7 +149,7 @@ void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(0, Game::SPECIAL_ITEM_COUNT - 1);
+	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(911, 911);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -309,10 +309,12 @@ void Game::UpdateObjects()
 			{
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 				{
-					if ((*it2)->getTarget() == ai && PathExists(ai, *it2))
+					if ((*it2)->getTarget() == ai && PathExists(ai, *it2) && !(*it2)->should_delete)
 						ai->setTarget(*it2);
 				}
 			}
+
+			ai_opponent = ai->getTarget();
 
 			if (ai->GetObjectType() == ObjectType::PLAYER_CHARACTER)
 			{
@@ -320,8 +322,37 @@ void Game::UpdateObjects()
 				{
 					for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 					{
-						if ((*it2)->IsItem() && PathExists(ai, *it2))
+						if ((*it2)->IsItem() && PathExists(ai, *it2) && !(*it2)->should_delete)
 							ai->setTarget(*it2);
+					}
+				}
+
+				else
+				{
+					int ai_x = ai->GetCoord().getX();
+					int ai_y = ai->GetCoord().getY();
+
+					int ai_opponent_x = ai->getTarget()->GetCoord().getX();
+					int ai_opponent_y = ai->getTarget()->GetCoord().getY();
+
+					double before_dist = sqrt(pow(ai_opponent_x - ai_x, 2) + pow(ai_opponent_y - ai_y, 2));
+
+					if (ai->getTarget()->GetObjectType() == ObjectType::FRIENDLY_NPC)
+						if (((FriendlyNPC*)ai->getTarget())->getHealth() <= 0)
+							before_dist = 10000;
+
+					for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+					{
+						if ((*it2)->getTarget() == ai)
+						{
+							int it_x = (*it2)->GetCoord().getX();
+							int it_y = (*it2)->GetCoord().getY();
+
+							double after_dist = sqrt(pow(it_x - ai_x, 2) + pow(it_y - ai_y, 2));
+
+							if (after_dist < before_dist && PathExists(ai, *it2) && !(*it2)->should_delete && (*it2)->getMaster() != ai)
+								ai->setTarget(*it2);
+						}
 					}
 				}
 			}
@@ -330,7 +361,7 @@ void Game::UpdateObjects()
 			{
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 				{
-					if ((*it2)->getTarget() == ai->getMaster())
+					if ((*it2)->getTarget() == ai->getMaster() && !(*it2)->should_delete)
 						ai->setTarget(*it2);
 				}
 			}

@@ -135,7 +135,7 @@ void Game::removeParticles()
 	{
 		Object* obj = *it;
 
-		if (obj->GetObjectType() == ObjectType::PARTICLE) 
+		if (obj->GetObjectType() == ObjectType::PARTICLE)
 		{
 			it = objects.erase(it);
 			--it;
@@ -297,7 +297,7 @@ void Game::UpdateObjects()
 				continue;
 			}
 
-			Character* ai_opponent = (Character*)ai->getTarget();
+			Object* ai_opponent = ai->getTarget();
 
 			int ai_x = ai->GetCoord().getX();
 			int ai_y = ai->GetCoord().getY();
@@ -305,21 +305,32 @@ void Game::UpdateObjects()
 			int target_x = ai_opponent->GetCoord().getX();
 			int target_y = ai_opponent->GetCoord().getY();
 
-			for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+			if (!PathExists(ai, ai_opponent) || ai_opponent->should_delete)
 			{
-				if ((*it2)->getTarget() == *it || (ai->getWeapon() == 0 && ((*it2)->GetObjectType() == ObjectType::DROPPED_SPECIAL_ITEM || (*it2)->GetObjectType() == ObjectType::DROPPED_WEAPON)))
+				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 				{
-					int target_x_2 = (*it2)->GetCoord().getX();
-					int target_y_2 = (*it2)->GetCoord().getY();
+					if ((*it2)->getTarget() == ai && PathExists(ai, *it2))
+						ai->setTarget(*it2);
+				}
+			}
 
-					double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
+			if (ai->GetObjectType() == ObjectType::PLAYER_CHARACTER)
+			{
+				if (ai->getWeapon() == 0)
+				{
+					for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+					{
+						if ((*it2)->IsItem() && PathExists(ai, *it2))
+							ai->setTarget(*it2);
+					}
+				}
+			}
 
-					if (ai_opponent->getHealth() <= 0)
-						dist = 10000.0;
-
-					double dist_2 = sqrt((ai_x - target_x_2) * (ai_x - target_x_2) + (ai_y - target_y_2) * (ai_y - target_y_2));
-
-					if (dist > dist_2 && ai->getMaster() != *it2)
+			else if (ai->GetObjectType() == ObjectType::FRIENDLY_NPC)
+			{
+				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+				{
+					if ((*it2)->getTarget() == ai->getMaster())
 						ai->setTarget(*it2);
 				}
 			}
@@ -448,27 +459,14 @@ void Game::UpdateObjects()
 
 					if (p2->getTarget()->IsItem())
 					{
-						if ((*it2)->getTarget() == p2)
+						if ((*it2)->getTarget() == p2 && PathExists(p2, *it2))
 							p2->setTarget(*it2);
 
 						break;
 					}
 
-					else
-					{
-						int target_x = p2->getTarget()->GetCoord().getX();
-						int target_y = p2->getTarget()->GetCoord().getY();
-
-						int target_x_2 = (*it2)->GetCoord().getX();
-						int target_y_2 = (*it2)->GetCoord().getY();
-
-						double dist = sqrt((ai_x - target_x) * (ai_x - target_x) + (ai_y - target_y) * (ai_y - target_y));
-
-						double dist_2 = sqrt((ai_x - target_x_2) * (ai_x - target_x_2) + (ai_y - target_y_2) * (ai_y - target_y_2));
-
-						if (dist > dist_2)
-							p2->setTarget(*it2);
-					}
+					else if ((*it2)->getTarget() == p2 && PathExists(p2, *it2))
+						p2->setTarget(*it2);
 				}
 			}
 
@@ -581,7 +579,7 @@ void Game::UpdateObjects()
 			it = objects.erase(it);
 			--it;
 		}
-			
+
 	}
 }
 
@@ -666,7 +664,8 @@ void Game::SummonBoss()
 		boss->setAI(true);
 
 		objects.push_back(boss);
-;	}
+		;
+	}
 }
 
 void Game::CharacterShoot(Character* character)
@@ -702,7 +701,7 @@ void Game::CharacterShoot(Character* character)
 
 		if (character->direction.getX() >= 0 && character->direction.getY() == 0)
 		{
-			p->SetCoord(character->GetCoord() + Vec2(0,i));
+			p->SetCoord(character->GetCoord() + Vec2(0, i));
 			p->SetNextCoord(character->GetCoord() + Vec2(0, i));
 			p->SetVelocity(Vec2{ 1, 0 });
 		}
@@ -807,6 +806,21 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 	return -1;
 }
 
+bool Game::PathExists(Object* ai, Object* target)
+{
+	Vec2 ways[4] = { Vec2(1,0),Vec2(-1,0) ,Vec2(0,-1) ,Vec2(0,1) };
+
+	for (int i = 0; i < 4; i++)
+	{
+		int dist = shortestPathBinaryMatrix(ai, target, ways[i]);
+
+		if (dist != -1)
+			return true;
+	}
+
+	return false;
+}
+
 void Game::getShortestWay(Object* ai, Object* target)
 {
 	Character* ai_character = (PlayerCharacter*)ai;
@@ -901,10 +915,10 @@ Object* Game::getGameOverPlayer()
 
 	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
 	{
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0])
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0] && ((EnemyNPC*)*it)->getHealth() <= 0)
 			return objects[1];
 
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1])
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1] && ((EnemyNPC*)*it)->getHealth() <= 0)
 			return objects[0];
 	}
 

@@ -149,7 +149,7 @@ void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(911, 911);
+	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(1, Game::SPECIAL_ITEM_COUNT - 1);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -610,7 +610,21 @@ void Game::UpdateObjects()
 			it = objects.erase(it);
 			--it;
 		}
+	}
 
+	for (int i = 0; i < 2; ++i)
+	{
+		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+		{
+			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[i])
+			{
+				if (objects[i]->IsCollisionWith(*it))
+				{
+					objects[i]->SetNextCoord(objects[i]->GetCoord());
+					(*it)->SetNextCoord((*it)->GetCoord());
+				}
+			}
+		}
 	}
 }
 

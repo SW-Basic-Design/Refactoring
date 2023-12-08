@@ -109,11 +109,23 @@ bool Object::IsCollisionWith(Object* obj)
 	Vec2 size = this->size;
 	Vec2 obj_size = obj->size;
 	
-	if (next == obj_next || current == obj_current || next == obj_current || current == obj_next)
-		return true;
+	for (int i = -size.getY() / 2; i <= size.getY() / 2; ++i)
+	{
+		for (int j = -size.getX() / 2; j <= size.getX() / 2; ++j)
+		{
+			if (next + Vec2{ i, j } == obj_next || current + Vec2{ i, j } == obj_current || next + Vec2{ i, j } == obj_current || current + Vec2{ i, j } == obj_next)
+				return true;
+		}
+	}
 
-	if (next == obj_next || current == obj_current || current == obj_next || next == obj_current)
-		return true;
+	for (int i = -obj_size.getY() / 2; i <= obj_size.getY() / 2; ++i)
+	{
+		for (int j = -obj_size.getX() / 2; j <= obj_size.getX() / 2; ++j)
+		{
+			if (next == obj_next + Vec2{ i, j } || current== obj_current + Vec2{ i, j } || next == obj_current + Vec2{ i, j } || current == obj_next + Vec2{ i, j })
+				return true;
+		}
+	}
 	
 	return false;
 }

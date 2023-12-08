@@ -10,6 +10,8 @@ void GameManager::StartGame()
 {
 	this->frameManager.InitFrame();
 
+	this->waitForStart();
+
 	this->game->MakePlayer();
 	this->game->MakeMap(this->game->current_stage);
 	
@@ -239,4 +241,26 @@ void GameManager::makeBossStage()
 	this->game->MakeBossMap();
 
 	this->game->SummonBoss();
+}
+
+void GameManager::waitForStart()
+{
+	auto last_milli = GetTickCount64();
+	auto milli = GetTickCount64();
+	int flag = 1;
+	while (1)
+	{
+		milli = GetTickCount64();
+		this->frameManager.drawGameStart(flag % 2);
+		this->frameManager.UpdateFrame();
+		if (_kbhit())
+		{
+			break;
+		}
+		if (last_milli + 500 < milli)
+		{
+			flag++;
+			last_milli = milli;
+		}
+	}
 }

@@ -30,6 +30,7 @@ public:
 	void PrintStageOverMassage(int flag);
 	void PrintCountDown(int flag);
 	void drawStatus(Character* player1, Character* player2);
+	void drawGameStart(int flag);
 private:
 	Frame frame;
 	int i = 0;

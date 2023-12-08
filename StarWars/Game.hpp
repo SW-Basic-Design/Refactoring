@@ -250,7 +250,7 @@ public:
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
 	int difficulty = 0;
-
+	bool isPvP;
 private:
 	bool gameOver;
 	bool stageOver;

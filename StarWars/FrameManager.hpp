@@ -31,6 +31,9 @@ public:
 	void PrintCountDown(int flag);
 	void drawStatus(Character* player1, Character* player2);
 	void drawGameStart(int flag);
+	void drawGameStory();
+	void drawGameModeSelectScreen(bool isPVP);
+	void drawHowToControl(bool isPVP);
 private:
 	Frame frame;
 	int i = 0;

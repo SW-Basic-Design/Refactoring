@@ -3,6 +3,7 @@
 Game::Game(bool gameOver) :gameOver(gameOver)
 {
 	this->objects = std::vector<Object*>();
+	this->isPvP = false;
 }
 
 void Game::MakeBossMap()

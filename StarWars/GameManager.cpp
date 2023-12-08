@@ -12,10 +12,18 @@ void GameManager::StartGame()
 
 	this->waitForStart();
 
+	this->showGameStory();
+
+	this->gameModeSelecter();
+
+	this->showHowToControl();
+
 	this->game->MakePlayer();
 	this->game->MakeMap(this->game->current_stage);
 	
 	this->game->difficulty = 0;
+
+	this->showCountDown();
 
 	while (PrecedeGame())
 	{
@@ -180,14 +188,7 @@ void GameManager::showStageOverScene()
 
 	//여기에 ChangeMap 함수 삽입 필요
 
-	for (int i = 0; i < 5; i++)
-	{
-		this->frameManager.MakeFrame(this->game->GetObjects());
-		this->frameManager.PrintCountDown(i);
-		this->frameManager.UpdateFrame();
-		Sleep(1000);
-	}
-
+	this->showCountDown();
 }
 
 void GameManager::resetStage()
@@ -248,19 +249,82 @@ void GameManager::waitForStart()
 	auto last_milli = GetTickCount64();
 	auto milli = GetTickCount64();
 	int flag = 1;
+
 	while (1)
 	{
 		milli = GetTickCount64();
+
 		this->frameManager.drawGameStart(flag % 2);
 		this->frameManager.UpdateFrame();
+
 		if (_kbhit())
 		{
 			break;
 		}
+
 		if (last_milli + 500 < milli)
 		{
 			flag++;
 			last_milli = milli;
+		}
+	}
+}
+
+void GameManager::showCountDown()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		this->frameManager.MakeFrame(this->game->GetObjects());
+		this->frameManager.PrintCountDown(i);
+		this->frameManager.UpdateFrame();
+		Sleep(1000);
+	}
+}
+
+void GameManager::showGameStory()
+{
+	this->frameManager.drawGameStory();
+}
+
+void GameManager::gameModeSelecter()
+{
+	char c = _getch();
+	while (1)
+	{
+		this->frameManager.drawGameModeSelectScreen(this->game->isPvP);
+		this->frameManager.UpdateFrame();
+
+		if (_kbhit())
+		{
+			c = _getch();
+			if (c == -32)
+			{
+				c = _getch();
+				if (c == 75 || c == 77 )
+				{
+					this->game->isPvP = this->game->isPvP == true ? false : true;
+				}
+			}
+			
+
+			if (c == VK_RETURN)
+			{
+				break;
+			}
+		}
+	}
+}
+
+void GameManager::showHowToControl()
+{
+	this->frameManager.drawHowToControl(this->game->isPvP);
+	this->frameManager.UpdateFrame();
+
+	while (1)
+	{
+		if (_kbhit())
+		{
+			break;
 		}
 	}
 }

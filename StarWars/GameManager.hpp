@@ -25,6 +25,10 @@ public:
 	void makeNormalStage();
 	void makeBossStage();
 	void waitForStart();
+	void showGameStory();
+	void showHowToControl();
+	void gameModeSelecter();
+	void showCountDown();
 	long long int last_item_SpawnTime;
 	const static int spawn_term = 15000;
 

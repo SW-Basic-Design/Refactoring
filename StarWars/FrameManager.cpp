@@ -829,10 +829,130 @@ void FrameManager::drawGameStart(int flag)
 			}
 		}
 	}
+
 	if (flag == 1)
 	{
-		string str = "Press Any Key To Start";
+
+		string str = "Press Any Key To Start Game";
 		SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
 		Print(str.c_str());
 	}
+}
+
+void FrameManager::drawGameStory()
+{
+	string story[1] = { "스토리" };
+	int story_length = 1;
+
+	int cnt = 0;
+	while (story_length > cnt)
+	{
+		this->PrintOutSideWalls();
+
+
+
+
+		string str = "Press ENTER Key To Skip";
+		SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
+		Print(str.c_str());
+		this->UpdateFrame();
+
+
+		char c = _getch();
+
+		if (c == VK_RETURN)
+		{
+			break;
+		}
+	}
+}
+
+void FrameManager::drawGameModeSelectScreen(bool isPVP)
+{
+	this->PrintOutSideWalls();
+	
+	string str = "게임 모드를 선택하세요!";
+
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 5 });
+	Print(str.c_str());
+
+
+	if (!isPVP)
+	{
+		SetCursorPosition({ (short)(16), 10 });
+		Print(">>");
+	}
+	SetCursorPosition({ (short)(20), 10 });
+	Print("PVE 모드");
+
+	if (isPVP)
+	{
+		SetCursorPosition({ (short)(50), 10 });
+		Print(">>");
+	}
+	SetCursorPosition({ (short)(54), 10 });
+	Print("PVP 모드");
+
+}
+
+void FrameManager::drawHowToControl(bool isPVP)
+{
+	this->PrintOutSideWalls();
+	string str = "플레이어 1 조작법";
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 3 });
+	Print(str.c_str());
+
+	str = "W, A, S, D : 좌, 우, 아래, 위 방향 이동";
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 4 });
+	Print(str.c_str());
+
+	str = "G : 무기 발사";
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 5 });
+	Print(str.c_str());
+
+	if (isPVP)
+	{
+		str = "플레이어 2 조작법";
+		SetCursorPosition({ (short)(40 - (str.length() / 2)), 7 });
+		Print(str.c_str());
+
+		str = "각 방향키 : 좌, 우, 아래, 위 방향 이동";
+		SetCursorPosition({ (short)(40 - (str.length() / 2)), 8 });
+		Print(str.c_str());
+
+		str = "NUM 5 : 무기 발사";
+		SetCursorPosition({ (short)(40 - (str.length() / 2)), 9 });
+		Print(str.c_str());
+	}
+
+	str = "플레이 방법";
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 11 });
+	Print(str.c_str());
+
+	str = "1. 일반 스테이지에서 상대 플레이어를 공격하세요.";
+	SetCursorPosition({ (short)(14), 12 });
+	Print(str.c_str());
+
+	str = "- 맵 밖으로 밀려나면 즉시 라운드를 패배하니 주의하세요!";
+	SetCursorPosition({ (short)(16), 13 });
+	Print(str.c_str());
+
+	str = "2. 아이템 상자를 획득하여 새로운 무기나 능력을 얻으세요.";
+	SetCursorPosition({ (short)(14), 14 });
+	Print(str.c_str());
+
+	str = "3. 보스를 먼저 처치하여 특수 아이템을 획득하세요.";
+	SetCursorPosition({ (short)(14), 15 });
+	Print(str.c_str());
+
+	str = "4. 상대 플레이어의 목숨을 먼저 소진시켜 승리를 쟁취하세요.";
+	SetCursorPosition({ (short)(14), 16 });
+	Print(str.c_str());
+
+
+
+
+	str = "Press Any Key To Skip";
+	SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
+	Print(str.c_str());
 }

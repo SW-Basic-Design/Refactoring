@@ -106,28 +106,10 @@ COORD FrameManager::GetCursorPosition()
 void FrameManager::MakeFrame(std::vector<Object*>& objects)
 {
 	SetCursorPosition({ (short)((objects[0])->GetCoord().getX() * 2), (short)(20 - (objects[0])->GetCoord().getY()) });
-	if (((PlayerCharacter*)objects[0])->isFreeze == true && ((PlayerCharacter*)objects[0])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else if (((PlayerCharacter*)objects[0])->isFreeze == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-	else if (((PlayerCharacter*)objects[0])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
-	Print("¡à");
-
+	PrintAttackedEffect(objects[0], 10);
+	
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
-
-	if (((PlayerCharacter*)objects[1])->isFreeze == true && ((PlayerCharacter*)objects[1])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else if (((PlayerCharacter*)objects[1])->isFreeze == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-	else if (((PlayerCharacter*)objects[1])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
-
-	Print("¡à");
+	PrintAttackedEffect(objects[1], 14);
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
@@ -159,6 +141,7 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 				}
 				break;
 			}
+
 			if (((Particle*)*it)->isShotgun)
 			{
 				Print("¡Å");
@@ -218,56 +201,11 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 			break;
 
 		case ObjectType::FRIENDLY_NPC:
-			if (((FriendlyNPC*)*it)->isFreeze == true && ((FriendlyNPC*)*it)->is_attacked == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-			else if (((FriendlyNPC*)*it)->isFreeze == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-			else if (((FriendlyNPC*)*it)->is_attacked == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-			else
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
-			Print("¢Â");
-
-			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			PrintAttackedEffect(*it, 15);
 			break;
 
 		case ObjectType::ENEMY_NPC:
-			COORD c = GetCursorPosition();
-			if (((EnemyNPC*)*it)->isFreeze == true && ((EnemyNPC*)*it)->is_attacked == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-			else if (((EnemyNPC*)*it)->isFreeze == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-			else if (((EnemyNPC*)*it)->is_attacked == true)
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-			else
-				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
-
-			for (int i = -1; i <= 1; ++i)
-			{
-				for (int j = -1; j <= 1; ++j)
-				{
-					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
-					if (i == -1 && j == -1)
-						Print("¦£");
-					if (i == -1 && j == 0)
-						Print("¦§");
-					if (i == -1 && j == 1)
-						Print("¦¦");
-					if (i == 0 && j == -1)
-						Print("¦¨");
-					if (i == 0 && j == 0)
-						Print("¢Á");
-					if (i == 0 && j == 1)
-						Print("¦ª");
-					if (i == 1 && j == -1)
-						Print("¦¤");
-					if (i == 1 && j == 0)
-						Print("¦©");
-					if (i == 1 && j == 1)
-						Print("¦¥");
-				}
-			}
-			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			PrintAttackedEffect(*it, 15);
 			
 			if (objects[0] == (*it)->getTarget())
 				PrintBossHealth(*it, 0);
@@ -840,5 +778,77 @@ void FrameManager::PrintBossHealth(Object* obj, int index)
 		{
 			Print("¡à");
 		}
+	}
+}
+
+void FrameManager::PrintAttackedEffect(Object* obj, int color_code)
+{
+	switch (obj->GetObjectType())
+	{
+	case ObjectType::PLAYER_CHARACTER:
+		if (((PlayerCharacter*)obj)->isFreeze == true && ((PlayerCharacter*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else if (((PlayerCharacter*)obj)->isFreeze == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+		else if (((PlayerCharacter*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], color_code);
+		
+		Print("¡à");
+		break;
+	case ObjectType::ENEMY_NPC:
+		COORD c = GetCursorPosition();
+		if (((EnemyNPC*)obj)->isFreeze == true && ((EnemyNPC*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else if (((EnemyNPC*)obj)->isFreeze == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+		else if (((EnemyNPC*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+
+		for (int i = -1; i <= 1; ++i)
+		{
+			for (int j = -1; j <= 1; ++j)
+			{
+				SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
+				if (i == -1 && j == -1)
+					Print("¦£");
+				if (i == -1 && j == 0)
+					Print("¦§");
+				if (i == -1 && j == 1)
+					Print("¦¦");
+				if (i == 0 && j == -1)
+					Print("¦¨");
+				if (i == 0 && j == 0)
+					Print("¢Á");
+				if (i == 0 && j == 1)
+					Print("¦ª");
+				if (i == 1 && j == -1)
+					Print("¦¤");
+				if (i == 1 && j == 0)
+					Print("¦©");
+				if (i == 1 && j == 1)
+					Print("¦¥");
+			}
+		}
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		break;
+	case ObjectType::FRIENDLY_NPC:
+		if (((FriendlyNPC*)obj)->isFreeze == true && ((FriendlyNPC*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else if (((FriendlyNPC*)obj)->isFreeze == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+		else if (((FriendlyNPC*)obj)->is_attacked == true)
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		else
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], color_code);
+
+		Print("¢Â");
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		break;
+	default:
+		break;
 	}
 }

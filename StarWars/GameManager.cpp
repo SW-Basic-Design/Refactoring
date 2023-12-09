@@ -256,7 +256,7 @@ void GameManager::gotoNextStage()
 
 void GameManager::makeNormalStage()
 {
-	this->game->MakeMap(1);
+	this->game->MakeMap(this->game->current_stage >= 3 ? 8 : this->game->current_stage * 3 + 1);
 }
 
 void GameManager::makeBossStage()

@@ -49,37 +49,37 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		for (int i = 0; i < 20; i++)
 		{
 			int Way = SetWay(generate);
-			Particle* bullet = new Particle();
-			bullet->isLaser = true;
-			bullet->SetSpeed(10);
-			bullet->setDamage(10);
-			bullet->max_range = 50;
+			Particle* laser = new Particle();
+			laser->isLaser = true;
+			laser->SetSpeed(15);
+			laser->setDamage(10);
+			laser->max_range = 50;
 
 			if (Way == 1) 
 			{
-				bullet->SetCoord({ XCoord(generate), 19 });
-				bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 0, -1 });
-				bullet->SetVelocity(Vec2{ 0, -1 });
+				laser->SetCoord({ XCoord(generate), 19 });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 0, -1 });
+				laser->SetVelocity(Vec2{ 0, -1 });
 			}
 			if (Way == 2)
 			{
-				bullet->SetCoord({ XCoord(generate), 1 });
-				bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 0, 1 });
-				bullet->SetVelocity(Vec2{ 0, 1 });
+				laser->SetCoord({ XCoord(generate), 1 });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 0, 1 });
+				laser->SetVelocity(Vec2{ 0, 1 });
 			}
 			if (Way == 3)
 			{
-				bullet->SetCoord({ 1, YCoord(generate) });
-				bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 1, 0 });
-				bullet->SetVelocity(Vec2{ 1, 0 });
+				laser->SetCoord({ 1, YCoord(generate) });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 1, 0 });
+				laser->SetVelocity(Vec2{ 1, 0 });
 			}
 			if (Way == 4)
 			{
-				bullet->SetCoord({ 39, YCoord(generate) });
-				bullet->SetNextCoord(bullet->GetCoord() + Vec2{ -1, 0 });
-				bullet->SetVelocity(Vec2{ -1, 0 });
+				laser->SetCoord({ 39, YCoord(generate) });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ -1, 0 });
+				laser->SetVelocity(Vec2{ -1, 0 });
 			}
-			objects.push_back(bullet);
+			objects.push_back(laser);
 		}
 		break;
 

@@ -218,7 +218,17 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 			break;
 
 		case ObjectType::FRIENDLY_NPC:
-			Print("A");
+			if (((FriendlyNPC*)*it)->isFreeze == true && ((FriendlyNPC*)*it)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else if (((FriendlyNPC*)*it)->isFreeze == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+			else if (((FriendlyNPC*)*it)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			Print("¢Â");
+
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 			break;
 
 		case ObjectType::ENEMY_NPC:

@@ -1069,18 +1069,104 @@ Object* Game::getGameOverPlayer()
 
 void Game::adjustDifficulty()
 {
+	// if (current_stage == boss_stage)
+	//		return;
+	if (current_stage % 2 != 0)
+		return;
+	
 	PlayerCharacter* player = static_cast<PlayerCharacter*>(objects[0]);
 	PlayerCharacter* ai = static_cast<PlayerCharacter*>(objects[1]);
-
-	int player_life = player->life;
-	int ai_life = ai->life;
 
 	int player_health = player->getHealth();
 	int ai_health = ai->getHealth();
 
-	double player_accuracy = (player->shot_bullet - player->missed_bullet) * 1.0 / player->shot_bullet;
-	double ai_accuracy = (ai->shot_bullet - ai->missed_bullet) * 1.0 / ai->shot_bullet;
+	/*if (player_health < 0)
+		player_health = 0;
 
-	ai->setOriginalSpeed(5);
-	ai->SetSpeed(5);
+	if (ai_health < 0)
+		ai_health = 0;*/
+
+	int health_difference = player_health - ai_health;
+
+	if (health_difference > 0)		// Player Win
+	{
+		health_difference = abs(health_difference);
+
+		if (health_difference >= 50)
+		{
+			if (this->difficulty != 90)
+			{
+				this->difficulty += 40;
+
+				if (this->difficulty > 90)
+					this->difficulty = 90;
+			}
+		}
+		else if (health_difference >= 20)
+		{
+			if (this->difficulty != 90)
+				this->difficulty += 20;
+		}
+	}
+	else							// AI Win
+	{
+		health_difference = abs(health_difference);
+
+		if (health_difference >= 50)
+		{
+			if (this->difficulty != 10)
+			{
+				this->difficulty -= 40;
+
+				if (this->difficulty < 0)
+					this->difficulty = 10;
+			}
+		}
+		else if (health_difference >= 20)
+		{
+			if (this->difficulty != 10)
+				this->difficulty -= 20;
+		}
+	}
+
+	/*double player_accuracy = (player->shot_bullet - player->missed_bullet) * 1.0 / player->shot_bullet;
+	double ai_accuracy = (ai->shot_bullet - ai->missed_bullet) * 1.0 / ai->shot_bullet;*/
+
+	if (this->difficulty == 90)
+	{
+		ai->setOriginalSpeed(10);
+		ai->SetSpeed(10);
+	}
+
+	else if (this->difficulty == 70)
+	{
+		ai->setOriginalSpeed(9);
+		ai->SetSpeed(9);
+
+		// ai stupid behavior (every 60sec)
+	}
+
+	else if (this->difficulty == 50)
+	{
+		ai->setOriginalSpeed(8);
+		ai->SetSpeed(8);
+
+		// ai stupid behavior (every 45sec)
+	}
+
+	else if (this->difficulty == 30)
+	{
+		ai->setOriginalSpeed(7);
+		ai->SetSpeed(7);
+
+		// ai stupid behavior (every 30sec)
+	}
+
+	else if (this->difficulty == 10)
+	{
+		ai->setOriginalSpeed(6);
+		ai->SetSpeed(6);
+
+		// ai stupid behavior (every 15sec)
+	}
 }

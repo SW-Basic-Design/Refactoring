@@ -255,7 +255,7 @@ public:
 private:
 	bool gameOver;
 	bool stageOver;
-	int difficulty = 0;
+	int difficulty = 50;
 	std::vector<Object*> objects;
 };
 

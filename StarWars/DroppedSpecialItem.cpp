@@ -32,7 +32,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 1:
-		player->setBuffTimer(2000);
+		player->setBuffTimer(5000);
 		player->SetSpeed((double)player->getOriginalSpeed() * 1.5);
 		player->current_buff = 1;
 		player->buff_start = milli;

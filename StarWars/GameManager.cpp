@@ -47,7 +47,6 @@ bool GameManager::PrecedeGame()
 				}
 			}
 
-			this->game->adjustDifficulty();
 			this->game->UpdateObjects();
 			this->game->UpdateObjectPosition();
 			this->game->UpdateMap();
@@ -63,6 +62,8 @@ bool GameManager::PrecedeGame()
 				PlayerCharacter* loser = (PlayerCharacter*)this->game->getGameOverPlayer();
 				loser->life -= 1;
 			}
+
+			this->game->adjustDifficulty();
 
 			this->showStageOverScene();
 

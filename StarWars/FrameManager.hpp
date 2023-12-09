@@ -5,6 +5,7 @@
 #include "PlayerCharacter.hpp"
 #include "Particle.hpp"
 #include "EnemyNPC.hpp"
+#include "FriendlyNPC.hpp"
 #include <string>
 
 #ifndef FRAME_MANAGER_HPP

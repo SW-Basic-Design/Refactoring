@@ -35,6 +35,7 @@ public:
 	void drawGameStory();
 	void drawGameModeSelectScreen(bool isPVP);
 	void drawHowToControl(bool isPVP);
+	void drawGameOverScene(int winner_id, int flag);
 private:
 	Frame frame;
 	int i = 0;

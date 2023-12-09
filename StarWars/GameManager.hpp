@@ -30,6 +30,7 @@ public:
 	void gameModeSelecter();
 	void showCountDown();
 	void showBossEliminated();
+	void showGameOver();
 	long long int last_item_SpawnTime;
 	const static int spawn_term = 15000;
 

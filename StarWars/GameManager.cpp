@@ -30,6 +30,8 @@ void GameManager::StartGame()
 		this->GetPlayerKeyInput();
 	}
 
+	this->showGameOver();
+
 	Sleep(100);
 }
 
@@ -67,39 +69,44 @@ bool GameManager::PrecedeGame()
 			this->frameManager.UpdateFrame();
 		}
 
-		else 
+		else
 		{
 			Character* loser = (Character*)this->game->getGameOverPlayer();
 
 			if (game->current_stage % 2 == 0)
 			{
 				loser->life -= 1;
-
-				this->showStageOverScene();
 			}
-
-			else
-			{
-				if (loser == nullptr)
-				{
-					this->showBossEliminated();
-				}
-
-				else
-				{
-					this->showStageOverScene();
-				}
-			}
-
-			this->resetStage();
-
-			this->gotoNextStage();
-
-			this->showCountDown();
 
 			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
 			{
 				this->game->SetGameOver(true);
+			}
+
+			else
+			{
+
+				if (game->current_stage % 2 == 0)
+				{
+					this->showStageOverScene();
+				}
+
+				else
+				{
+					if (loser == nullptr)
+					{
+						this->showBossEliminated();
+					}
+
+					else
+					{
+						this->showStageOverScene();
+					}
+				}
+
+				this->resetStage();
+				this->gotoNextStage();
+				this->showCountDown();
 			}
 
 			this->game->SetStageOver(false);
@@ -367,6 +374,29 @@ void GameManager::showBossEliminated()
 		this->frameManager.PrintStageOverMassage(i % 2);
 		this->frameManager.UpdateFrame();
 		Sleep(600);
+	}
+
+
+}
+
+void GameManager::showGameOver()
+{
+	int player_number;
+
+	Object* dead_player = this->game->getGameOverPlayer();
+
+	if (dead_player == this->game->GetObjects()[0])
+		player_number = 0;
+	else
+		player_number = 1;
+
+	this->frameManager.printDeadPlayerMove((PlayerCharacter*)dead_player, player_number);
+
+	for (int i = 0; i < 5; i++)
+	{
+		this->frameManager.drawGameOverScene(1 - player_number, i % 2);
+		this->frameManager.UpdateFrame();
+		Sleep(500);
 	}
 
 

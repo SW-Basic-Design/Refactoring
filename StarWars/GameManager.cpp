@@ -70,19 +70,12 @@ bool GameManager::PrecedeGame()
 
 			this->gotoNextStage();
 
-			for (int i = 0; i < 5; i++)
-			{
-				this->frameManager.MakeFrame(this->game->GetObjects());
-				this->frameManager.PrintCountDown(i);
-				this->frameManager.UpdateFrame();
-				Sleep(1000);
-			}
-
-
 			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
 			{
 				this->game->SetGameOver(true);
 			}
+
+			this->countDown();
 
 			this->game->SetStageOver(false);
 		}
@@ -233,4 +226,28 @@ void GameManager::makeBossStage()
 	this->game->MakeBossMap();
 
 	this->game->SummonBoss();
+}
+
+void GameManager::countDown()
+{
+	if (!this->game->IsGameOver())
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			this->frameManager.MakeFrame(this->game->GetObjects());
+			this->frameManager.PrintCountDown(i);
+			this->frameManager.UpdateFrame();
+			Sleep(1000);
+		}
+	}
+
+	else
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			this->frameManager.Print("GAME OVER");
+			this->frameManager.UpdateFrame();
+			Sleep(1000);
+		}
+	}
 }

@@ -24,6 +24,7 @@ public:
 	void gotoNextStage();
 	void makeNormalStage();
 	void makeBossStage();
+	void countDown();
 	long long int last_item_SpawnTime;
 	const static int spawn_term = 15000;
 

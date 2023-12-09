@@ -26,7 +26,7 @@ public:
 	void MakeFrame(std::vector<Object*>&);
 	void PrintOutSideWalls();
 	void MakeStageOverFrame(std::vector<Object*>& objects, Object * dead_player, int flag);
-	void printDeadPlayerMove(Character* player);
+	void printDeadPlayerMove(Character* player, int number);
 	void PrintStageOverMassage(int flag);
 	void PrintCountDown(int flag);
 	void drawStatus(Character* player1, Character* player2);

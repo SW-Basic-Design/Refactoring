@@ -453,12 +453,20 @@ void FrameManager::PrintOutSideWalls()
 	}
 }
 
-void FrameManager::printDeadPlayerMove(Character* player)
+void FrameManager::printDeadPlayerMove(Character* player, int number)
 {
 	int pos_x = player->GetCoord().getX();
 	int pos_y = player->GetCoord().getY();
 
 	int dx, dy;
+
+	int player_color;
+	if (number == 0)
+		player_color = 12;
+	else
+		player_color = 14;
+
+
 	if (pos_x < 20)
 		dx = 1;
 	else if (pos_x > 20)
@@ -477,21 +485,14 @@ void FrameManager::printDeadPlayerMove(Character* player)
 	while (pos_x != 20)
 	{
 		Sleep(25);
-		for (int y = 0; y < 20; y++)
-		{
-			for (int x = 0; x < 41; x++)
-			{
-				SetCursorPosition({ (short)(x * 2), (short)(y + 1) });
-				if (y != 0 && y != 19 && x != 0 && x != 40)
-					Print(" ");
-				else
-					Print("б█");
-			}
-		}
+
+		this->PrintOutSideWalls();
+		
+
 
 		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 		Print("бр");
 		UpdateFrame();
 
@@ -504,7 +505,7 @@ void FrameManager::printDeadPlayerMove(Character* player)
 		PrintOutSideWalls();
 		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 		Print("бр");
 		UpdateFrame();
 
@@ -513,36 +514,42 @@ void FrameManager::printDeadPlayerMove(Character* player)
 
 	Sleep(100);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 	Print("бс");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 	Print("бр");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 	Print("бс");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 	Print("бр");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 	Print("бс");
 	UpdateFrame();
 
 	Sleep(300);
 	PrintOutSideWalls();
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)((pos_x) * 2), (short)(19 - (pos_y - 1)) });
 	Print("б┌");
 	UpdateFrame();
@@ -553,6 +560,7 @@ void FrameManager::printDeadPlayerMove(Character* player)
 	{
 		for (int j = -1; j <= 1; j++)
 		{
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 			SetCursorPosition({ (short)((pos_x + j) * 2), (short)(19 - (pos_y - 1 + i)) });
 			if ((i != 0 && j != 0) || (i == 0 && j == 0))
 			{

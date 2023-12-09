@@ -65,7 +65,7 @@ void Game::MakePlayer()
 	player1->SetCoord({ 9, HEIGHT / 2 });
 	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->setHealth(99999);
+	player1->setHealth(9999);
 
 	player1->SetNextCoord({ 9, HEIGHT / 2 });
 	player2->SetNextCoord({ 31, HEIGHT / 2 });

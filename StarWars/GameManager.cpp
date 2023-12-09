@@ -169,11 +169,18 @@ void GameManager::GetPlayerKeyInput()
 
 void GameManager::showStageOverScene()
 {
+	int player_number;
+
 	Object* dead_player = this->game->getGameOverPlayer();
 
-	this->frameManager.printDeadPlayerMove((PlayerCharacter *)dead_player);
+	if (dead_player == this->game->GetObjects()[0])
+		player_number = 0;
+	else
+		player_number = 1;
 
-	for (int i = 0; i < 6; i++)
+	this->frameManager.printDeadPlayerMove((PlayerCharacter *)dead_player, player_number);
+
+	for (int i = 0; i < 5; i++)
 	{
 		//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
 		this->frameManager.PrintOutSideWalls();

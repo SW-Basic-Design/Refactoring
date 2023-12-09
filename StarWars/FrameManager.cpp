@@ -964,3 +964,74 @@ void FrameManager::drawHowToControl(bool isPVP)
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
 	Print(str.c_str());
 }
+
+void FrameManager::MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead_boss, int flag)
+{
+	SetCursorPosition({ (short)((objects[0])->GetCoord().getX() * 2), (short)(20 - (objects[0])->GetCoord().getY()) });
+	if (((PlayerCharacter*)objects[0])->isFreeze == true && ((PlayerCharacter*)objects[0])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else if (((PlayerCharacter*)objects[0])->isFreeze == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+	else if (((PlayerCharacter*)objects[0])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
+	Print("бр");
+
+	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
+
+	if (((PlayerCharacter*)objects[1])->isFreeze == true && ((PlayerCharacter*)objects[1])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else if (((PlayerCharacter*)objects[1])->isFreeze == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+	else if (((PlayerCharacter*)objects[1])->is_attacked == true)
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+	else
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
+
+	Print("бр");
+
+	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+
+	for (std::vector<Object*>::iterator it = objects.begin() + 2; it != objects.end(); ++it)
+	{
+		SetCursorPosition({ (short)((*it)->GetCoord().getX() * 2), (short)(20 - (*it)->GetCoord().getY()) });
+
+		switch ((*it)->GetObjectType())
+		{
+		case ObjectType::WALL:
+			Print("б█");
+			break;
+
+		case ObjectType::ENEMY_NPC:
+
+			if ((*it) == dead_boss)
+			{
+				if (flag == 1)
+				{
+					SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+				}
+				if (flag == 2)
+				{
+					continue;
+				}
+			}
+				
+
+			COORD c = GetCursorPosition();
+
+			for (int i = -1; i <= 1; ++i)
+			{
+				for (int j = -1; j <= 1; ++j)
+				{
+					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
+					Print("E");
+				}
+			}
+
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+		}
+
+
+	}
+}

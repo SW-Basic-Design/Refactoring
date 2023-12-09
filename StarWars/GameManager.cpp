@@ -69,13 +69,27 @@ bool GameManager::PrecedeGame()
 
 		else 
 		{
+			Character* loser = (Character*)this->game->getGameOverPlayer();
+
 			if (game->current_stage % 2 == 0)
 			{
-				PlayerCharacter* loser = (PlayerCharacter*)this->game->getGameOverPlayer();
 				loser->life -= 1;
+
+				this->showStageOverScene();
 			}
 
-			this->showStageOverScene();
+			else
+			{
+				if (loser == nullptr)
+				{
+					this->showBossEliminated();
+				}
+
+				else
+				{
+					this->showStageOverScene();
+				}
+			}
 
 			this->resetStage();
 
@@ -184,7 +198,6 @@ void GameManager::showStageOverScene()
 
 	for (int i = 0; i < 5; i++)
 	{
-		//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
 		this->frameManager.PrintOutSideWalls();
 		this->frameManager.PrintStageOverMassage(i % 2);
 		this->frameManager.UpdateFrame();
@@ -329,4 +342,32 @@ void GameManager::showHowToControl()
 			break;
 		}
 	}
+}
+
+void GameManager::showBossEliminated()
+{
+	Object* dead_boss = this->game->getGameOverBoss();
+
+	for (int i = 0; i < 5; i++)
+	{
+		this->frameManager.MakeBossDeadFrame(this->game->GetObjects(), dead_boss, i % 2);
+		this->frameManager.UpdateFrame();
+
+		Sleep(700);
+	}
+
+	this->frameManager.MakeBossDeadFrame(this->game->GetObjects(), dead_boss, 2);
+	this->frameManager.UpdateFrame();
+	Sleep(700);
+
+	for (int i = 0; i < 5; i++)
+	{
+		//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, i%2);
+		this->frameManager.PrintOutSideWalls();
+		this->frameManager.PrintStageOverMassage(i % 2);
+		this->frameManager.UpdateFrame();
+		Sleep(600);
+	}
+
+
 }

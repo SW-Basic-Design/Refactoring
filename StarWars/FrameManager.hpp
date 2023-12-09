@@ -25,6 +25,7 @@ public:
 	COORD GetCursorPosition();
 	void MakeFrame(std::vector<Object*>&);
 	void PrintOutSideWalls();
+	void MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead_boss, int flag);
 	void MakeStageOverFrame(std::vector<Object*>& objects, Object * dead_player, int flag);
 	void printDeadPlayerMove(Character* player, int number);
 	void PrintStageOverMassage(int flag);

@@ -898,16 +898,21 @@ Object* Game::getGameOverPlayer()
 
 	else if (((PlayerCharacter*)objects[1])->getHealth() <= 0)
 		return(objects[1]);
+	else
+		return nullptr;
 
-
-	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
-	{
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0])
-			return objects[1];
-
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1])
-			return objects[0];
-	}
+	
 
 	return objects[0];
+}
+
+Object* Game::getGameOverBoss()
+{
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && ((Character*)(*it))->getHealth() <= 0)
+			return (*it);
+	}
+
+	return nullptr;
 }

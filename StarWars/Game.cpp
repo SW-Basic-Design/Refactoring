@@ -389,75 +389,6 @@ void Game::UpdateObjects()
 
 		UpdateSingleObjectNextPosition(*it);
 
-		if ((*it)->IsPlayer())
-		{
-			PlayerCharacter* player = static_cast<PlayerCharacter*>(*it);
-			auto milli = GetTickCount64();
-
-			if (player->current_buff != 0 && player->buff_start + player->getBuffTimer() < milli)
-			{
-				player->current_buff = 0;
-				player->SetSpeed(player->getOriginalSpeed());
-				player->isFreeze = false;
-				player->setBuffTimer(0);
-			}
-
-			if (player->GetHitTimer() > 0)
-				player->SetHitTimer(player->GetHitTimer() - 1);
-
-			else
-				player->is_attacked = false;
-
-			if (player->isFreeze)
-			{
-				player->SetNextCoord(player->GetCoord());
-				continue;
-			}
-
-			int next_x = player->GetNextCoord().getX();
-			int next_y = player->GetNextCoord().getY();
-
-			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::WALL)
-			{
-				player->SetVelocity({ 0, 0 });
-
-				player->SetNextCoord(player->GetCoord());
-				continue;
-			}
-
-			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::PARTICLE)
-			{
-				Particle* bullet = (Particle*)Curmap[next_y][next_x];
-
-				if (bullet->shooter == *it)
-					continue;
-
-				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
-
-				target->giveDamage(bullet->getDamage());
-
-				if (player->getHealth() <= 0)
-				{
-					this->stageOver = true;
-				}
-
-				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
-					if (*it2 == bullet)
-						(*it2)->should_delete = true;
-			}
-
-			if (next_y <= 0 || next_y >= 19 || next_x <= 0 || next_x >= 40)
-			{
-				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
-
-				target->setHealth(0);
-
-				this->stageOver = true;
-
-				continue;
-			}
-		}
-
 		if ((*it)->IsItem())
 		{
 			DroppedItem* item = static_cast<DroppedItem*>(*it);
@@ -586,6 +517,74 @@ void Game::UpdateObjects()
 			}
 		}
 
+		if ((*it)->IsPlayer())
+		{
+			PlayerCharacter* player = static_cast<PlayerCharacter*>(*it);
+			auto milli = GetTickCount64();
+
+			if (player->current_buff != 0 && player->buff_start + player->getBuffTimer() < milli)
+			{
+				player->current_buff = 0;
+				player->SetSpeed(player->getOriginalSpeed());
+				player->isFreeze = false;
+				player->setBuffTimer(0);
+			}
+
+			if (player->GetHitTimer() > 0)
+				player->SetHitTimer(player->GetHitTimer() - 1);
+
+			else
+				player->is_attacked = false;
+
+			if (player->isFreeze)
+			{
+				player->SetNextCoord(player->GetCoord());
+				continue;
+			}
+
+			int next_x = player->GetNextCoord().getX();
+			int next_y = player->GetNextCoord().getY();
+
+			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::WALL)
+			{
+				player->SetVelocity({ 0, 0 });
+
+				player->SetNextCoord(player->GetCoord());
+				continue;
+			}
+
+			if (Curmap[next_y][next_x] != nullptr && Curmap[next_y][next_x]->GetObjectType() == ObjectType::PARTICLE)
+			{
+				Particle* bullet = (Particle*)Curmap[next_y][next_x];
+
+				if (bullet->shooter == *it)
+					continue;
+
+				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
+
+				target->giveDamage(bullet->getDamage());
+
+				if (player->getHealth() <= 0)
+				{
+					this->stageOver = true;
+				}
+
+				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
+					if (*it2 == bullet)
+						(*it2)->should_delete = true;
+			}
+
+			if (next_y <= 0 || next_y >= 19 || next_x <= 0 || next_x >= 40)
+			{
+				PlayerCharacter* target = static_cast<PlayerCharacter*>(*it);
+
+				target->setHealth(0);
+
+				this->stageOver = true;
+
+				continue;
+			}
+		}
 	}
 
 	PlayerCharacter* p1 = (PlayerCharacter*)objects[0];
@@ -693,7 +692,7 @@ void Game::SummonBoss()
 	{
 		EnemyNPC* boss = new EnemyNPC();
 
-		boss->SetCoord({ i * 20 + 11, 11 });
+		boss->SetCoord({ i * 20 + 11, 15 });
 		boss->SetNextCoord(boss->GetCoord());
 
 		boss->setHealth(300);

@@ -81,6 +81,8 @@ bool GameManager::PrecedeGame()
 
 			this->gotoNextStage();
 
+			this->showCountDown();
+
 			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
 			{
 				this->game->SetGameOver(true);
@@ -189,13 +191,6 @@ void GameManager::showStageOverScene()
 		Sleep(600);
 	}
 	
-	//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, 2);
-	//this->frameManager.UpdateFrame();
-	//Sleep(600);
-
-	//여기에 ChangeMap 함수 삽입 필요
-
-	this->showCountDown();
 }
 
 void GameManager::resetStage()

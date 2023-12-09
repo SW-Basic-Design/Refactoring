@@ -70,6 +70,15 @@ bool GameManager::PrecedeGame()
 
 			this->gotoNextStage();
 
+			for (int i = 0; i < 5; i++)
+			{
+				this->frameManager.MakeFrame(this->game->GetObjects());
+				this->frameManager.PrintCountDown(i);
+				this->frameManager.UpdateFrame();
+				Sleep(1000);
+			}
+
+
 			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
 			{
 				this->game->SetGameOver(true);
@@ -169,20 +178,6 @@ void GameManager::showStageOverScene()
 		this->frameManager.PrintStageOverMassage(i % 2);
 		this->frameManager.UpdateFrame();
 		Sleep(600);
-	}
-	
-	//this->frameManager.MakeStageOverFrame(this->game->GetObjects(), dead_player, 2);
-	//this->frameManager.UpdateFrame();
-	//Sleep(600);
-
-	//여기에 ChangeMap 함수 삽입 필요
-
-	for (int i = 0; i < 5; i++)
-	{
-		this->frameManager.MakeFrame(this->game->GetObjects());
-		this->frameManager.PrintCountDown(i);
-		this->frameManager.UpdateFrame();
-		Sleep(1000);
 	}
 
 }

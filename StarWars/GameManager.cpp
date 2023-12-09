@@ -12,8 +12,6 @@ void GameManager::StartGame()
 
 	this->game->MakePlayer();
 	this->game->MakeMap(this->game->current_stage);
-	
-	this->game->difficulty = 0;
 
 	while (PrecedeGame())
 	{
@@ -49,6 +47,7 @@ bool GameManager::PrecedeGame()
 				}
 			}
 
+			this->game->adjustDifficulty();
 			this->game->UpdateObjects();
 			this->game->UpdateObjectPosition();
 			this->game->UpdateMap();

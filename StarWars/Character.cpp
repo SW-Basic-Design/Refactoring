@@ -68,6 +68,9 @@ std::string Character::getWeaponName()
 	case 6:
 		return "ÀåÇ³";
 
+	case 7:
+		return "Äá¾ËÅº";
+
 	default :
 		return "ÁÖ¸Ô";
 	}

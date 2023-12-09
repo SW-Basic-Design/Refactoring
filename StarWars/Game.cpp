@@ -65,6 +65,7 @@ void Game::MakePlayer()
 	player2->SetCoord({ 31, HEIGHT / 2 });
 
 	player1->setHealth(100);
+	player2->setHealth(100);
 
 	player1->SetNextCoord({ 9, HEIGHT / 2 });
 	player2->SetNextCoord({ 31, HEIGHT / 2 });
@@ -73,12 +74,12 @@ void Game::MakePlayer()
 	player2->SetVelocity({ 0, 0 });
 
 	player1->SetSpeed(10);
-	player2->SetSpeed(5);
+	player2->SetSpeed(10);
 
 	player1->setOriginalSpeed(10);
-	player2->setOriginalSpeed(5);
+	player2->setOriginalSpeed(10);
 
-	player1->setWeapon(5);
+	player1->setWeapon(1);
 	player2->setWeapon(1);
 
 	player1->setTarget(player2);
@@ -149,7 +150,7 @@ void Game::MakeItem()
 {
 	random_device rd_variable;
 	mt19937 generate(rd_variable());
-	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(1, Game::SPECIAL_ITEM_COUNT - 1);
+	uniform_int_distribution<> IsItem(0, 1), SetWeapon(1, Game::WEAPON_COUNT - 1), SetSpecialItem(0, Game::SPECIAL_ITEM_COUNT - 1);
 	int Item = IsItem(generate);
 
 	for (int i = 0; i < 3; i++)
@@ -326,11 +327,11 @@ void Game::UpdateObjects()
 			int target_x = ai_opponent->GetCoord().getX();
 			int target_y = ai_opponent->GetCoord().getY();
 
-			if (!PathExists(ai, ai_opponent) || ai_opponent->should_delete)
+			if ((!PathExists(ai, ai_opponent) && ai_opponent->GetObjectType() != ObjectType::ENEMY_NPC) || ai_opponent->should_delete)
 			{
 				for (std::vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); ++it2)
 				{
-					if ((*it2)->getTarget() == ai && PathExists(ai, *it2) && !(*it2)->should_delete)
+					if ((*it2)->getTarget() == ai && (PathExists(ai, *it2) || (*it2)->GetObjectType() == ObjectType::ENEMY_NPC) && !(*it2)->should_delete)
 						ai->setTarget(*it2);
 				}
 			}
@@ -368,6 +369,9 @@ void Game::UpdateObjects()
 						{
 							int it_x = (*it2)->GetCoord().getX();
 							int it_y = (*it2)->GetCoord().getY();
+
+							if (ai->getTarget()->IsItem())
+								before_dist = 10000;
 
 							double after_dist = sqrt(pow(it_x - ai_x, 2) + pow(it_y - ai_y, 2));
 
@@ -473,6 +477,10 @@ void Game::UpdateObjects()
 			if (bullet->current_range >= bullet->max_range || !(0 <= next_x && next_x <= 40) || !(0 <= next_y && next_y <= 19))
 			{
 				(*it)->should_delete = true;
+
+				if (bullet->shooter != nullptr)
+					static_cast<Character*>(bullet->shooter)->missed_bullet += 1;
+
 				continue;
 			}
 
@@ -487,6 +495,10 @@ void Game::UpdateObjects()
 				Wall* wall = static_cast<Wall*>(obj);
 
 				wall->giveDamage(bullet->getDamage());
+
+				if (bullet->shooter != nullptr)
+					static_cast<Character*>(bullet->shooter)->missed_bullet += 1;
+
 				(*it)->should_delete = true;
 
 				continue;
@@ -602,8 +614,21 @@ void Game::UpdateObjects()
 				target->setHealth(0);
 
 				this->stageOver = true;
+				break;
+			}
+		}
 
-				continue;
+		if ((*it)->IsCharacter())
+		{
+			Character* character = static_cast<Character*>(*it);
+
+			int next_x = character->GetNextCoord().getX();
+			int next_y = character->GetNextCoord().getY();
+
+			if (next_y <= 0 || next_y >= 19 || next_x <= 0 || next_x >= 40)
+			{
+				character->setHealth(0);
+				break;
 			}
 		}
 	}
@@ -667,10 +692,20 @@ void Game::UpdateMap()
 		int x = coord.getX();
 		int y = coord.getY();
 
-		if (!(0 <= x && x <= Game::WIDTH) || !(0 <= y && y <= Game::HEIGHT))
-			continue;
+		int size_x = (*it)->size.getX();
+		int size_y = (*it)->size.getY();
 
-		Curmap[y][x] = *it;
+		for (int i = -size_y / 2; i <= size_y / 2; ++i)
+		{
+			for (int j = -size_x / 2; j <= size_x / 2; ++j)
+			{
+				if (!(0 <= x + j && x + j <= Game::WIDTH - 1) || !(0 <= y + i && y + i <= Game::HEIGHT - 1))
+					continue;
+
+				Curmap[y + i][x + j] = *it;
+			}
+		}
+
 	}
 }
 
@@ -748,9 +783,9 @@ void Game::CharacterShoot(Character* character)
 	character->last_shot = milli;
 
 	int start = character->isWeaponShotgun() ? -1 : 0;
-	int end = character->isWeaponShotgun() ? 2 : 1;
+	int end = character->isWeaponShotgun() ? 1 : 0;
 
-	for (int i = start; i < end; i++)
+	for (int i = start; i <= end; i++)
 	{
 		Particle* p = new Particle();
 
@@ -791,7 +826,24 @@ void Game::CharacterShoot(Character* character)
 			p->SetVelocity(Vec2{ 0, -1 });
 		}
 
+		if (character->GetObjectType() == ObjectType::ENEMY_NPC)
+		{
+			Vec2 character_coord = character->GetCoord();
+			Vec2 enemy_coord = character->getTarget()->GetCoord();
+
+			if (abs(character_coord.getX() - enemy_coord.getX()) < 2)
+				p->SetCoord({ enemy_coord.getX(), character_coord.getY() });
+
+			else if (abs(character_coord.getY() - enemy_coord.getY()) < 2)
+				p->SetCoord({ character_coord.getX(), enemy_coord.getY() });
+
+			p->SetNextCoord(p->GetCoord());
+		}
+
 		objects.push_back(p);
+
+		if (character->GetObjectType() == ObjectType::PLAYER_CHARACTER)
+			static_cast<PlayerCharacter*>(character)->shot_bullet += 1;
 	}
 
 	if (character->bullet_count == 0)
@@ -819,10 +871,12 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 		q.pop();
 		//printf("%d %d->", x, y);
 		// If the target node is reached, return current value. As, we use BFS, we will get only shortest path
-		if (y == target.getY() && x == target.getX()) return value;
+		if (y == target.getY() && x == target.getX())
+			return value;
 
 		// If current is out of bounds or is 1 or visited, skip it
-		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && Curmap[y][x]->GetObjectType() == ObjectType::WALL) || visited[y][x]) continue;
+		if (y < 0 || y >= 20 || x < 0 || x >= 41 || (Curmap[y][x] != nullptr && (Curmap[y][x]->GetObjectType() == ObjectType::WALL || (ai->getTarget()->GetObjectType() != ObjectType::ENEMY_NPC && ai->GetObjectType() != ObjectType::ENEMY_NPC && Curmap[y][x]->IsCharacter()))) || visited[y][x])
+			continue;
 
 		bool skip = false;
 
@@ -830,8 +884,8 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 		{
 			for (int j = -ai->size.getY() / 2; j <= ai->size.getY() / 2; ++j)
 			{
-				int next_y = y + j;
 				int next_x = x + i;
+				int next_y = y + j;
 
 				if (next_x < 0 || next_x >= WIDTH || next_y < 0 || next_y >= HEIGHT)
 					continue;
@@ -848,16 +902,6 @@ int Game::shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way) {
 
 		if (skip)
 			continue;
-
-		random_device rd_variable;
-		mt19937 generate(rd_variable());
-		uniform_int_distribution<> avoid(0, 3);
-
-		int should_avoid = avoid(generate);
-
-		if (should_avoid <= difficulty && ai->GetObjectType() != ObjectType::FRIENDLY_NPC)
-			if (Curmap[y][x] != nullptr && (Curmap[y][x]->GetObjectType() == ObjectType::PARTICLE && ((Particle*)Curmap[y][x])->shooter != ai))
-				continue;
 
 		// Mark visited and add cells in all directions
 		visited[y][x] = true;
@@ -936,6 +980,22 @@ void Game::getShortestWay(Object* ai, Object* target)
 		else
 			ai_character->direction = Vec2{ -1, 0 };
 	}
+
+	int ai_coord_x = ai->GetCoord().getX();
+	int ai_coord_y = ai->GetCoord().getY();
+
+	int ai_target_coord_x = ai->getTarget()->GetCoord().getX();
+	int ai_target_coord_y = ai->getTarget()->GetCoord().getY();
+
+	if (abs(ai_coord_x - ai_target_coord_x) >= 2)
+	{
+		((PlayerCharacter*)ai)->direction = Vec2{ -(ai_coord_x - ai_target_coord_x) / abs(ai_coord_x - ai_target_coord_x), 0 };
+	}
+
+	if (abs(ai_coord_y - ai_target_coord_y) >= 2)
+	{
+		((PlayerCharacter*)ai)->direction = Vec2{ 0, -(ai_coord_y - ai_target_coord_y) / abs(ai_coord_y - ai_target_coord_y) };
+	}
 }
 
 bool Game::shouldShoot(Object* ai)
@@ -959,11 +1019,29 @@ bool Game::shouldShoot(Object* ai)
 	if (dist - 3 > (double)ai_character->getWeaponMaxRange())
 		return false;
 
-	if (ai_x == target_x)
-		return true;
+	int ai_size_x = ai->size.getX();
+	int ai_size_y = ai->size.getY();
 
-	if (ai_y == target_y)
-		return true;
+	int target_size_x = ai_character->getTarget()->size.getX();
+	int target_size_y = ai_character->getTarget()->size.getY();
+
+	for (int i = -target_size_y / 2; i <= target_size_y / 2; ++i)
+	{
+		for (int j = -target_size_x / 2; j <= target_size_x / 2; ++j)
+		{
+			if (ai_x == target_x + j || ai_y == target_y + i)
+				return true;
+		}
+	}
+
+	for (int i = -ai_size_y / 2; i <= ai_size_y / 2; ++i)
+	{
+		for (int j = -ai_size_x / 2; j <= ai_size_x / 2; ++j)
+		{
+			if (ai_x + j == target_x || ai_y + i == target_y)
+				return true;
+		}
+	}
 
 	return false;
 }
@@ -987,4 +1065,22 @@ Object* Game::getGameOverPlayer()
 	}
 
 	return objects[0];
+}
+
+void Game::adjustDifficulty()
+{
+	PlayerCharacter* player = static_cast<PlayerCharacter*>(objects[0]);
+	PlayerCharacter* ai = static_cast<PlayerCharacter*>(objects[1]);
+
+	int player_life = player->life;
+	int ai_life = ai->life;
+
+	int player_health = player->getHealth();
+	int ai_health = ai->getHealth();
+
+	double player_accuracy = (player->shot_bullet - player->missed_bullet) * 1.0 / player->shot_bullet;
+	double ai_accuracy = (ai->shot_bullet - ai->missed_bullet) * 1.0 / ai->shot_bullet;
+
+	ai->setOriginalSpeed(5);
+	ai->SetSpeed(5);
 }

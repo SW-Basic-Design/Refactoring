@@ -30,7 +30,7 @@ public:
 	void printDeadPlayerMove(Character* player);
 	void PrintStageOverMassage(int flag);
 	void PrintCountDown(int flag);
-	void drawStatus(Character* player1, Character* player2);
+	void drawStatus(PlayerCharacter* player1, PlayerCharacter* player2);
 private:
 	Frame frame;
 	int i = 0;

@@ -43,10 +43,11 @@ public:
 	void CharacterShoot(Character* player);
 	std::vector<Object*>& GetObjects();
 	bool shouldShoot(Object* ai);
+	void adjustDifficulty();
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
 	const int SPECIAL_ITEM_COUNT = 4;
-	const int WEAPON_COUNT = 7;
+	const int WEAPON_COUNT = 8;
 	int current_stage = 0;
 	const int map[9][20][41] = {
 		{
@@ -250,11 +251,11 @@ public:
 };
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
-	int difficulty = 0;
 
 private:
 	bool gameOver;
 	bool stageOver;
+	int difficulty = 0;
 	std::vector<Object*> objects;
 };
 

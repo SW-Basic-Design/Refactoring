@@ -278,10 +278,10 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 			break;
 		}
 	}
-	drawStatus((Character*)objects[0], (Character*)objects[1]);
+	drawStatus((PlayerCharacter*)objects[0], (PlayerCharacter*)objects[1]);
 }
 
-void FrameManager::drawStatus(Character* player1, Character* player2)
+void FrameManager::drawStatus(PlayerCharacter* player1, PlayerCharacter* player2)
 {
 	SetCursorPosition({ 1, 22 });
 	Print("플레이어 1");
@@ -310,6 +310,8 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	SetCursorPosition({ 1, 27 });
 	Print("상태 : ");
 	Print(player1->getBuffName().c_str());
+	SetCursorPosition({ 1, 28 });
+	Print((std::to_string(player1->missed_bullet) + " / " + std::to_string(player1->shot_bullet)).c_str());
 
 
 	SetCursorPosition({ 52, 22 });
@@ -339,10 +341,8 @@ void FrameManager::drawStatus(Character* player1, Character* player2)
 	SetCursorPosition({ 52, 27 });
 	Print("상태 : ");
 	Print(player2->getBuffName().c_str());
-
-
 	SetCursorPosition({ 52, 28 });
-	Print(std::to_string(i++).c_str());
+	Print((std::to_string(player2->missed_bullet) + " / " + std::to_string(player2->shot_bullet)).c_str());
 }
 
 
@@ -482,7 +482,7 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 	}
 
-	drawStatus((Character*)objects[0], (Character*)objects[1]);
+	drawStatus((PlayerCharacter*)objects[0], (PlayerCharacter*)objects[1]);
 }
 
 void FrameManager::PrintOutSideWalls()

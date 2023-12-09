@@ -10,7 +10,7 @@ Particle::Particle() :Object()
 	this->current_range = 0;
 	this->isMelee = false;
 	this->isShotgun = false;
-	this->isBombing = false;
+	this->isLaser = false;
 	this->isHatoken = false;
 }
 

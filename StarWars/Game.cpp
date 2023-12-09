@@ -64,7 +64,7 @@ void Game::MakePlayer()
 	player1->SetCoord({ 9, HEIGHT / 2 });
 	player2->SetCoord({ 31, HEIGHT / 2 });
 
-	player1->setHealth(99999);
+	player1->setHealth(100);
 
 	player1->SetNextCoord({ 9, HEIGHT / 2 });
 	player2->SetNextCoord({ 31, HEIGHT / 2 });
@@ -290,6 +290,27 @@ void Game::UpdateObjects()
 		if ((*it)->IsCharacter() && ((Character*)*it)->IsAI())
 		{
 			Character* ai = static_cast<Character*>(*it);
+			auto milli = GetTickCount64();
+
+			if (ai->current_buff != 0 && ai->buff_start + ai->getBuffTimer() < milli)
+			{
+				ai->current_buff = 0;
+				ai->SetSpeed(ai->getOriginalSpeed());
+				ai->isFreeze = false;
+				ai->setBuffTimer(0);
+			}
+
+			if (ai->GetHitTimer() > 0)
+				ai->SetHitTimer(ai->GetHitTimer() - 1);
+
+			else
+				ai->is_attacked = false;
+
+			if (ai->isFreeze)
+			{
+				ai->SetNextCoord(ai->GetCoord());
+				continue;
+			}
 
 			if (ai->GetObjectType() == ObjectType::FRIENDLY_NPC && ai->getHealth() <= 0)
 			{
@@ -709,7 +730,6 @@ void Game::SummonBoss()
 		boss->setAI(true);
 
 		objects.push_back(boss);
-		;
 	}
 }
 

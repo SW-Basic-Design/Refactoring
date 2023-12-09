@@ -165,12 +165,6 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 				break;
 			}
 
-			if (((Particle*)*it)->isBombing)
-			{
-				Print("Ⅸ");
-				break;
-			}
-
 			if (((Particle*)*it)->isHatoken)
 			{
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() >= 0)
@@ -186,24 +180,37 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 				break;
 			}
 
-			if (((Particle*)*it)->getDamage() <= 5)
+			if (((Particle*)*it)->isLaser)
 			{
-				Print("﹞");
-			}
-			else if (((Particle*)*it)->getDamage() <= 10)
-			{
-				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
-					Print("太");
-				else
-					Print("ㄜ");
-			}
-			else
-			{
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
 					Print("|");
 				else
 					Print("式");
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 			}
+			else
+			{
+				if (((Particle*)*it)->getDamage() <= 5)
+				{
+					Print("﹞");
+				}
+				else if (((Particle*)*it)->getDamage() <= 10)
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("太");
+					else
+						Print("ㄜ");
+				}
+				else
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("|");
+					else
+						Print("式");
+				}
+			}
+						
 			break;
 
 		case ObjectType::DROPPED_SPECIAL_ITEM: case ObjectType::DROPPED_WEAPON:
@@ -216,26 +223,51 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 
 		case ObjectType::ENEMY_NPC:
 			COORD c = GetCursorPosition();
+			if (((EnemyNPC*)*it)->isFreeze == true && ((EnemyNPC*)*it)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else if (((EnemyNPC*)*it)->isFreeze == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+			else if (((EnemyNPC*)*it)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
 			for (int i = -1; i <= 1; ++i)
 			{
 				for (int j = -1; j <= 1; ++j)
 				{
 					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
-					Print("E");
+					if (i == -1 && j == -1)
+						Print("忙");
+					if (i == -1 && j == 0)
+						Print("戍");
+					if (i == -1 && j == 1)
+						Print("戌");
+					if (i == 0 && j == -1)
+						Print("成");
+					if (i == 0 && j == 0)
+						Print("Ⅸ");
+					if (i == 0 && j == 1)
+						Print("扛");
+					if (i == 1 && j == -1)
+						Print("忖");
+					if (i == 1 && j == 0)
+						Print("扣");
+					if (i == 1 && j == 1)
+						Print("戎");
 				}
 			}
-
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			
 			if (objects[0] == (*it)->getTarget())
 				PrintBossHealth(*it, 0);
 
 			else
 				PrintBossHealth(*it, 1);
+
+			break;
 		}
-
-
 	}
-
 	drawStatus((Character*)objects[0], (Character*)objects[1]);
 }
 
@@ -312,7 +344,7 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 	else if (objects[0] == dead_player && flag == 1)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 13);
 	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
 
 	if (objects[0] == dead_player)
 	{
@@ -381,12 +413,6 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 				break;
 			}
 
-			if (((Particle*)*it)->isBombing)
-			{
-				Print("Ⅸ");
-				break;
-			}
-
 			if (((Particle*)*it)->isHatoken)
 			{
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() >= 0)
@@ -402,24 +428,37 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 				break;
 			}
 
-			if (((Particle*)*it)->getDamage() <= 5)
+			if (((Particle*)*it)->isLaser)
 			{
-				Print("﹞");
-			}
-			else if (((Particle*)*it)->getDamage() <= 10)
-			{
-				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
-					Print("太");
-				else
-					Print("ㄜ");
-			}
-			else
-			{
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
 					Print("|");
 				else
 					Print("式");
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 			}
+			else
+			{
+				if (((Particle*)*it)->getDamage() <= 5)
+				{
+					Print("﹞");
+				}
+				else if (((Particle*)*it)->getDamage() <= 10)
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("太");
+					else
+						Print("ㄜ");
+				}
+				else
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("|");
+					else
+						Print("式");
+				}
+			}
+
 			break;
 
 		case ObjectType::DROPPED_SPECIAL_ITEM: case ObjectType::DROPPED_WEAPON:

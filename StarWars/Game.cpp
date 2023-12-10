@@ -74,10 +74,10 @@ void Game::MakePlayer()
 	player2->SetVelocity({ 0, 0 });
 
 	player1->SetSpeed(10);
-	player2->SetSpeed(10);
+	player2->SetSpeed(8);
 
 	player1->setOriginalSpeed(10);
-	player2->setOriginalSpeed(10);
+	player2->setOriginalSpeed(8);
 
 	player1->setWeapon(1);
 	player2->setWeapon(1);

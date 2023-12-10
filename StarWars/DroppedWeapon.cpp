@@ -23,13 +23,13 @@ int DroppedWeapon::getDamage(int weapon_id)
 		return 5;
 
 	case 2://rifle
-		return 8;
+		return 7;
 
 	case 3://sword
 		return 15;
 
 	case 4://shotgun
-		return 5;
+		return 15;
 
 	case 5://sniper
 		return 20;
@@ -90,7 +90,7 @@ int DroppedWeapon::getBulletCount(int weapon_id)
 		return 20;
 
 	case 2://rifle
-		return 60;
+		return 30;
 
 	case 3://sword
 		return 10;

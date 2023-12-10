@@ -303,6 +303,11 @@ void Game::UpdateObjects()
 			break;
 		}
 
+		if ((*it)->last_updated + (1000.0 / (*it)->GetSpeed()) > milli)
+			continue;
+
+		(*it)->last_updated = milli;
+
 		if ((*it)->IsCharacter() && ((Character*)*it)->IsAI())
 		{
 			Character* ai = static_cast<Character*>(*it);
@@ -405,17 +410,22 @@ void Game::UpdateObjects()
 						ai->setTarget(*it2);
 				}
 			}
-
+			
 			getShortestWay((*it), (*it)->getTarget());
 
-			if (shouldShoot(*it) && !(*it)->getTarget()->IsItem())
-				CharacterShoot(ai);
+			int random = rand() % 10 + 1;
+
+			if (random >= difficulty / 5)
+			{
+				doSomethingStupid(ai);
+			}
+
+			else
+			{
+				if (shouldShoot(*it) && !(*it)->getTarget()->IsItem())
+					CharacterShoot(ai);
+			}
 		}
-
-		if ((*it)->last_updated + (1000.0 / (*it)->GetSpeed()) > milli)
-			continue;
-
-		(*it)->last_updated = milli;
 
 		if ((*it)->GetObjectType() == ObjectType::WALL)
 		{
@@ -1181,5 +1191,24 @@ void Game::adjustDifficulty()
 		ai->SetSpeed(6);
 
 		// ai stupid behavior (every 15sec)
+	}
+}
+
+void Game::doSomethingStupid(Character* ai)
+{
+	int random = rand() % 3;
+
+	switch (random)
+	{
+	case 0:
+		ai->SetVelocity(Vec2{ 0, 0 });
+		break;
+	case 1:
+		ai->direction = Vec2{ -ai->direction.getX(), -ai->direction.getY() };
+		CharacterShoot(ai);
+		break;
+	case 2:
+		ai->SetVelocity(Vec2{ -ai->GetVelocity().getX(), -ai->GetVelocity().getY() });
+		break;
 	}
 }

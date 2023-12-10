@@ -36,6 +36,7 @@ public:
 	void UpdateObjects();
 	void UpdateMap();
 	void SummonBoss();
+	void doSomethingStupid(Character*);
 	bool PathExists(Object* ai, Object* target);
 	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);

@@ -26,8 +26,10 @@ public:
 	Vec2 SetItemCoord();
 	bool IsGameOver();
 	bool IsStageOver();
+	bool IsBossStage();
 	void SetGameOver(bool);
 	void SetStageOver(bool);
+	void SetIsBossStage(bool);
 	void UpdateObjectNextPosition();
 	void UpdateSingleObjectNextPosition(Object*);
 	void UpdateObjectPosition();
@@ -256,6 +258,7 @@ private:
 	bool gameOver;
 	bool stageOver;
 	int difficulty = 50;
+	bool isBossStage = false;
 	std::vector<Object*> objects;
 };
 

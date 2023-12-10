@@ -22,7 +22,7 @@ public:
 	void resetStage();
 	void removeAllComponents();
 	void gotoNextStage();
-	void makeNormalStage();
+	void makeNormalStage(int);
 	void makeBossStage();
 	void countDown();
 	long long int last_item_SpawnTime;

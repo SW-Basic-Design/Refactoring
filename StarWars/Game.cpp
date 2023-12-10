@@ -3,11 +3,16 @@
 Game::Game(bool gameOver) :gameOver(gameOver)
 {
 	this->objects = std::vector<Object*>();
+
+	random_device rd;
+	mt19937 generate(rd());
+	uniform_int_distribution<> SetStage(0, 2);
+	this->current_stage = SetStage(generate);
 }
 
 void Game::MakeBossMap()
 {
-	MakeMap(current_stage >= 3 ? 8 : current_stage * 3 + 1);
+	MakeMap(this->current_stage);
 
 	for (int y = 0; y < HEIGHT; ++y)
 	{
@@ -249,9 +254,19 @@ bool Game::IsStageOver()
 	return stageOver;
 }
 
+bool Game::IsBossStage()
+{
+	return isBossStage;
+}
+
 void Game::SetStageOver(bool stageOver)
 {
 	this->stageOver = stageOver;
+}
+
+void Game::SetIsBossStage(bool isBossStage)
+{
+	this->isBossStage = isBossStage;
 }
 
 std::vector<Object*>& Game::GetObjects()
@@ -1069,9 +1084,7 @@ Object* Game::getGameOverPlayer()
 
 void Game::adjustDifficulty()
 {
-	// if (current_stage == boss_stage)
-	//		return;
-	if (current_stage % 2 != 0)
+	if (this->isBossStage)
 		return;
 	
 	PlayerCharacter* player = static_cast<PlayerCharacter*>(objects[0]);

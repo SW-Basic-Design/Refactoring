@@ -29,7 +29,7 @@ bool GameManager::PrecedeGame()
 		{
 			auto milli = GetTickCount64();
 
-			if (this->game->current_stage % 2 == 0)
+			if (!this->game->IsBossStage())
 			{
 				if (last_item_SpawnTime + spawn_term < milli)
 				{
@@ -206,20 +206,26 @@ void GameManager::removeAllComponents()
 
 void GameManager::gotoNextStage()
 {
-	bool is_boss_stage = this->game->current_stage % 2 == 0;
-
-	if (is_boss_stage)
+	if (!this->game->IsBossStage())
+	{
+		this->game->SetIsBossStage(true);
 		this->makeBossStage();
+	}
 
-	else 
-		this->makeNormalStage();
+	else
+	{
+		this->game->SetIsBossStage(false);
 
-	this->game->current_stage += 1;
+		if (this->game->current_stage < 6)
+			this->game->current_stage += 3;
+
+		this->makeNormalStage(this->game->current_stage);
+	}
 }
 
-void GameManager::makeNormalStage()
+void GameManager::makeNormalStage(int map_index)
 {
-	this->game->MakeMap(1);
+	this->game->MakeMap(map_index);
 }
 
 void GameManager::makeBossStage()

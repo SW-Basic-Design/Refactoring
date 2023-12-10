@@ -38,6 +38,7 @@ public:
 	void getShortestWay(Object* start, Object* target);
 	Object * getGameOverPlayer();
 	Object* getGameOverBoss();
+	void makeAIforWinner(Character* loser);
 	void removeParticles();
 	bool isOutOfMap(Object* obj);
 	void CharacterShoot(Character* player);

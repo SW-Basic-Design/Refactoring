@@ -899,9 +899,23 @@ Object* Game::getGameOverPlayer()
 	else if (((PlayerCharacter*)objects[1])->getHealth() <= 0)
 		return(objects[1]);
 	else
-		return nullptr;
+	{
+		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+		{
+			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && ((Character*)(*it))->getHealth() <= 0)
+			{
+				if (((*it)->getTarget() == objects[0]))
+				{
+					return objects[1];
+				}
 
-	
+				else
+				{
+					return objects[0];
+				}
+			}
+		}
+	}	
 
 	return objects[0];
 }
@@ -915,4 +929,34 @@ Object* Game::getGameOverBoss()
 	}
 
 	return nullptr;
+}
+
+void Game::makeAIforWinner(Character * loser)
+{
+	FriendlyNPC* npc = new FriendlyNPC();
+	objects.push_back(npc);
+
+	if (loser == this->objects[0])
+	{
+		npc->SetCoord(objects[1]->GetCoord() + Vec2(1,0));
+		npc->SetNextCoord(objects[1]->GetCoord() + Vec2(1, 0));
+	}
+
+	else
+	{
+		npc->SetCoord(objects[0]->GetCoord() + Vec2(-1, 0));
+		npc->SetNextCoord(objects[0]->GetCoord() + Vec2(-1, 0));
+	}
+
+	npc->SetVelocity({ 0, 0 });
+
+	npc->SetSpeed(10);
+
+	npc->setOriginalSpeed(10);
+
+	npc->setWeapon(99);
+
+	npc->setTarget((Object *)loser);
+
+	npc->setAI(true);
 }

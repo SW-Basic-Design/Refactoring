@@ -93,7 +93,7 @@ bool GameManager::PrecedeGame()
 
 				else
 				{
-					if (loser == nullptr)
+					if (loser->getHealth() > 0 )
 					{
 						this->showBossEliminated();
 					}
@@ -106,6 +106,10 @@ bool GameManager::PrecedeGame()
 
 				this->resetStage();
 				this->gotoNextStage();
+
+				if (game->current_stage % 2 == 0)
+					this->game->makeAIforWinner(loser);
+
 				this->showCountDown();
 			}
 

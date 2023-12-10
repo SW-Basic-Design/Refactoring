@@ -216,8 +216,14 @@ void GameManager::gotoNextStage()
 	{
 		this->game->SetIsBossStage(false);
 
-		if (this->game->current_stage < 6)
+		if (this->game->current_stage < 6)			// Stage Difficulty Low & Middle
 			this->game->current_stage += 3;
+		
+		else if (this->game->current_stage >= 6)	// Stage Difficulty High
+			this->game->current_stage += 1;
+
+		if (this->game->current_stage >= 9)			// Stage Index Overflow
+			this->game->current_stage -= 3;
 
 		this->makeNormalStage(this->game->current_stage);
 	}

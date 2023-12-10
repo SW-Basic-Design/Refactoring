@@ -804,6 +804,7 @@ void FrameManager::PrintBossHealth(Object* obj, int index)
 
 void FrameManager::drawGameStart(int flag)
 {
+
 	int data[20][41] = {
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -849,29 +850,82 @@ void FrameManager::drawGameStart(int flag)
 
 void FrameManager::drawGameStory()
 {
-	string story[1] = { "스토리" };
-	int story_length = 1;
+	string story[20] = {
+		"플레이어들은 우주 여행을 즐기는 우주 모험가로,",
+		"여러 은하를 누비며 모험을 하던중",
+		"강력한 중력을 지닌 블랙홀을 만나",
+		"순식간에 길을 잃고 외계 행성에 불시착합니다.",
+		"그리고 그들은 그곳의 알 수 없는 생명체들에게 납치되어",
+		"거대하고도 복잡한 투기장으로 끌려갑니다.",
+		" ",
+		"미지의 생명체들은. ",
+		"\"이 투기장에서 빠져나갈 수 있는 사람은 단 1명이며,",
+		"패배자들은 이 행성의 노예로서",
+		"남은 인생을 살아가야 한다\" 라고 이야기 합니다.",
+		" ",
+		"투기장은 다양한 환경과 독특한 지형을 가진",
+		"다섯 개의 지역으로 나뉘어져 있으며,",
+		"플레이어들은 투기장 곳곳에 있는 각종 무기를 습득해",
+		"서로 싸우게 됩니다.",
+		" ",
+		"지금까지 플레이어들은 서로 동료였지만,",
+		"이제는 각자 자기자신의 생존을 위해 투기장에서 싸워야만 합니다.",
+		"그들의 처절한 이야기가 지금 바로 시작됩니다." };
+
+
+	int story_length = 20;
+
+	string cur_story[10];
 
 	int cnt = 0;
-	while (story_length > cnt)
+
+	char c = _getch();
+
+	auto milli = GetTickCount64();
+	auto last_milli = 0;
+
+	while (story_length + 10 > cnt)
 	{
-		this->PrintOutSideWalls();
-
-
-
-
-		string str = "Press ENTER Key To Skip";
-		SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
-		Print(str.c_str());
-		this->UpdateFrame();
-
-
-		char c = _getch();
-
-		if (c == VK_RETURN)
+		if (last_milli == 0 || last_milli + 1000 < milli)
 		{
-			break;
+			last_milli = milli;
+
+			this->PrintOutSideWalls();
+
+			for (int i = 0; i < 9; i++)
+			{
+				cur_story[9 - i] = cur_story[9 - i - 1];
+				SetCursorPosition({ (short)(40 - (cur_story[9 - i].length() / 2)), (short)(5 + i + 1) });
+				Print(cur_story[9 - i].c_str());
+			}
+			if (cnt < story_length)
+				cur_story[0] = story[cnt];
+			else
+				cur_story[0] = "";
+
+			SetCursorPosition({ (short)(40 - (cur_story[0].length() / 2)), (short)(15) });
+			Print(cur_story[0].c_str());
+
+			cnt++;
+
+			string str = "Press ENTER Key To Skip";
+			SetCursorPosition({ (short)(40 - (str.length() / 2)), 18 });
+			Print(str.c_str());
+			this->UpdateFrame();
 		}
+
+		if (_kbhit())
+		{
+			c = _getch();
+			
+			if (c == VK_RETURN)
+			{
+				return;
+			}
+			
+		}
+
+		milli = GetTickCount64();
 	}
 }
 

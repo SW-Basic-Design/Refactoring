@@ -310,7 +310,7 @@ void GameManager::showGameStory()
 
 void GameManager::gameModeSelecter()
 {
-	char c = _getch();
+	char c;
 	while (1)
 	{
 		this->frameManager.drawGameModeSelectScreen(this->game->isPvP);

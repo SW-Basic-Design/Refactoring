@@ -26,12 +26,18 @@ public:
 	COORD GetCursorPosition();
 	void MakeFrame(std::vector<Object*>&);
 	void PrintOutSideWalls();
+	void MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead_boss, int flag);
 	void MakeStageOverFrame(std::vector<Object*>& objects, Object * dead_player, int flag);
-	void printDeadPlayerMove(Character* player);
+	void printDeadPlayerMove(Character* player, int number);
 	void PrintStageOverMassage(int flag);
 	void PrintCountDown(int flag);
+	void drawStatus(Character* player1, Character* player2);
+	void drawGameStart(int flag);
+	void drawGameStory();
+	void drawGameModeSelectScreen(bool isPVP);
+	void drawHowToControl(bool isPVP);
+	void drawGameOverScene(int winner_id, int flag);
 	void PrintAttackedEffect(Object*, int);
-	void drawStatus(PlayerCharacter* player1, PlayerCharacter* player2);
 private:
 	Frame frame;
 	int i = 0;

@@ -3,6 +3,7 @@
 Game::Game(bool gameOver) :gameOver(gameOver)
 {
 	this->objects = std::vector<Object*>();
+	this->isPvP = false;
 
 	random_device rd;
 	mt19937 generate(rd());
@@ -160,7 +161,7 @@ void Game::MakeItem()
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (!Item)		// Item == 0 ÀÌ¸é ¹«±â
+		if (!Item)		// Item == 0 ì´ë©´ ë¬´ê¸°
 		{
 			DroppedWeapon* weapon = new DroppedWeapon(SetWeapon(generate));
 			((Object*)weapon)->SetCoord(SetItemCoord());
@@ -169,7 +170,7 @@ void Game::MakeItem()
 			Curmap[weapon->GetCoord().getY()][weapon->GetCoord().getX()] = weapon;
 		}
 
-		else			// Item == 1 ÀÌ¸é Æ¯¼ö ¾ÆÀÌÅÛ
+		else			// Item == 1 ì´ë©´ íŠ¹ìˆ˜ ì•„ì´í…œ
 		{
 			DroppedSpecialItem* item = new DroppedSpecialItem(SetSpecialItem(generate));
 			((Object*)item)->SetCoord(SetItemCoord());
@@ -198,7 +199,7 @@ Vec2 Game::SetItemCoord()
 	{
 		while (Curmap[coord.getY()][coord.getX()] != 0)
 		{
-			if (Way == 1)		// »ó
+			if (Way == 1)		// ìƒ
 			{
 				coord.setY(coord.getY() + 1);
 				if (coord.getY() >= Game::HEIGHT - 1)
@@ -207,7 +208,7 @@ Vec2 Game::SetItemCoord()
 					Way = SetWay(generate);
 				}
 			}
-			if (Way == 2)		// ÇÏ
+			if (Way == 2)		// í•˜
 			{
 				coord.setY(coord.getY() - 1);
 				if (coord.getY() <= 0)
@@ -216,7 +217,7 @@ Vec2 Game::SetItemCoord()
 					Way = SetWay(generate);
 				}
 			}
-			if (Way == 3)		// ÁÂ
+			if (Way == 3)		// ì¢Œ
 			{
 				coord.setX(coord.getX() - 1);
 				if (coord.getX() <= 0)
@@ -225,7 +226,7 @@ Vec2 Game::SetItemCoord()
 					Way = SetWay(generate);
 				}
 			}
-			if (Way == 4)		// ¿ì
+			if (Way == 4)		// ìš°
 			{
 				coord.setX(coord.getX() + 1);
 				if (coord.getX() >= Game::WIDTH - 1)
@@ -410,7 +411,7 @@ void Game::UpdateObjects()
 						ai->setTarget(*it2);
 				}
 			}
-			
+
 			getShortestWay((*it), (*it)->getTarget());
 
 			int random = rand() % 10 + 1;
@@ -1078,25 +1079,82 @@ Object* Game::getGameOverPlayer()
 
 	else if (((PlayerCharacter*)objects[1])->getHealth() <= 0)
 		return(objects[1]);
-
-
-	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	else
 	{
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0] && ((EnemyNPC*)*it)->getHealth() <= 0)
-			return objects[1];
+		for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+		{
+			if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && ((Character*)(*it))->getHealth() <= 0)
+			{
+				if (((*it)->getTarget() == objects[0]))
+				{
+					return objects[1];
+				}
 
-		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1] && ((EnemyNPC*)*it)->getHealth() <= 0)
-			return objects[0];
+				else
+				{
+					return objects[0];
+				}
+			}
+		}
 	}
 
 	return objects[0];
+}
+
+Object* Game::getGameOverBoss()
+{
+	for (std::vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && ((Character*)(*it))->getHealth() <= 0)
+			return (*it);
+	}
+
+	return nullptr;
+}
+
+void Game::makeAIforWinner(Character* loser)
+{
+	FriendlyNPC* npc = new FriendlyNPC();
+	objects.push_back(npc);
+
+	if (loser == this->objects[0])
+	{
+		npc->SetCoord(objects[1]->GetCoord() + Vec2(1, 0));
+		npc->SetNextCoord(objects[1]->GetCoord() + Vec2(1, 0));
+	}
+
+	else
+	{
+		npc->SetCoord(objects[0]->GetCoord() + Vec2(-1, 0));
+		npc->SetNextCoord(objects[0]->GetCoord() + Vec2(-1, 0));
+	}
+
+	npc->SetVelocity({ 0, 0 });
+
+	npc->SetSpeed(10);
+
+	npc->setOriginalSpeed(10);
+
+	npc->setWeapon(99);
+
+	npc->setTarget((Object*)loser);
+
+	npc->setAI(true);
+	if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[0] && ((EnemyNPC*)*it)->getHealth() <= 0)
+		return objects[1];
+
+	if ((*it)->GetObjectType() == ObjectType::ENEMY_NPC && (*it)->getTarget() == objects[1] && ((EnemyNPC*)*it)->getHealth() <= 0)
+		return objects[0];
+}
+
+return objects[0];
 }
 
 void Game::adjustDifficulty()
 {
 	if (this->isBossStage)
 		return;
-	
+
 	PlayerCharacter* player = static_cast<PlayerCharacter*>(objects[0]);
 	PlayerCharacter* ai = static_cast<PlayerCharacter*>(objects[1]);
 

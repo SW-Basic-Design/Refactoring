@@ -41,6 +41,8 @@ public:
 	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);
 	Object * getGameOverPlayer();
+	Object* getGameOverBoss();
+	void makeAIforWinner(Character* loser);
 	void removeParticles();
 	bool isOutOfMap(Object* obj);
 	void CharacterShoot(Character* player);
@@ -254,7 +256,8 @@ public:
 };
 	Object* Curmap[20][41];
 	unsigned long long int last_updated;
-
+	int difficulty = 0;
+	bool isPvP;
 private:
 	bool gameOver;
 	bool stageOver;

@@ -20,8 +20,6 @@ void GameManager::StartGame()
 
 	this->game->MakePlayer();
 	this->game->MakeMap(this->game->current_stage);
-	
-	this->game->difficulty = 0;
 
 	this->showCountDown();
 
@@ -43,7 +41,7 @@ bool GameManager::PrecedeGame()
 		{
 			auto milli = GetTickCount64();
 
-			if (this->game->current_stage % 2 == 0)
+			if (!this->game->IsBossStage())
 			{
 				if (last_item_SpawnTime + spawn_term < milli)
 				{
@@ -78,6 +76,14 @@ bool GameManager::PrecedeGame()
 				loser->life -= 1;
 			}
 
+			this->game->adjustDifficulty();
+
+			this->showStageOverScene();
+
+			this->resetStage();
+
+			this->gotoNextStage();
+
 			if (((Character*)this->game->GetObjects()[0])->life <= 0 || ((Character*)this->game->GetObjects()[1])->life <= 0)
 			{
 				this->game->SetGameOver(true);
@@ -93,7 +99,7 @@ bool GameManager::PrecedeGame()
 
 				else
 				{
-					if (loser->getHealth() > 0 )
+					if (loser->getHealth() > 0)
 					{
 						this->showBossEliminated();
 					}
@@ -112,6 +118,8 @@ bool GameManager::PrecedeGame()
 
 				this->showCountDown();
 			}
+
+			this->countDown();
 
 			this->game->SetStageOver(false);
 		}
@@ -205,7 +213,7 @@ void GameManager::showStageOverScene()
 	else
 		player_number = 1;
 
-	this->frameManager.printDeadPlayerMove((PlayerCharacter *)dead_player, player_number);
+	this->frameManager.printDeadPlayerMove((PlayerCharacter*)dead_player, player_number);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -214,7 +222,6 @@ void GameManager::showStageOverScene()
 		this->frameManager.UpdateFrame();
 		Sleep(600);
 	}
-	
 }
 
 void GameManager::resetStage()
@@ -247,20 +254,32 @@ void GameManager::removeAllComponents()
 
 void GameManager::gotoNextStage()
 {
-	bool is_boss_stage = this->game->current_stage % 2 == 0;
-
-	if (is_boss_stage)
+	if (!this->game->IsBossStage())
+	{
+		this->game->SetIsBossStage(true);
 		this->makeBossStage();
+	}
 
-	else 
-		this->makeNormalStage();
+	else
+	{
+		this->game->SetIsBossStage(false);
 
-	this->game->current_stage += 1;
+		if (this->game->current_stage < 6)			// Stage Difficulty Low & Middle
+			this->game->current_stage += 3;
+
+		else if (this->game->current_stage >= 6)	// Stage Difficulty High
+			this->game->current_stage += 1;
+
+		if (this->game->current_stage >= 9)			// Stage Index Overflow
+			this->game->current_stage -= 3;
+
+		this->makeNormalStage(this->game->current_stage);
+	}
 }
 
-void GameManager::makeNormalStage()
+void GameManager::makeNormalStage(int map_index)
 {
-	this->game->MakeMap(this->game->current_stage >= 3 ? 8 : this->game->current_stage * 3 + 1);
+	this->game->MakeMap(map_index);
 }
 
 void GameManager::makeBossStage()
@@ -326,12 +345,12 @@ void GameManager::gameModeSelecter()
 			if (c == -32)
 			{
 				c = _getch();
-				if (c == 75 || c == 77 )
+				if (c == 75 || c == 77)
 				{
 					this->game->isPvP = this->game->isPvP == true ? false : true;
 				}
 			}
-			
+
 
 			if (c == VK_RETURN)
 			{
@@ -403,5 +422,28 @@ void GameManager::showGameOver()
 		Sleep(500);
 	}
 
+}
 
+void GameManager::countDown()
+{
+	if (!this->game->IsGameOver())
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			this->frameManager.MakeFrame(this->game->GetObjects());
+			this->frameManager.PrintCountDown(i);
+			this->frameManager.UpdateFrame();
+			Sleep(1000);
+		}
+	}
+
+	else
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			this->frameManager.Print("GAME OVER");
+			this->frameManager.UpdateFrame();
+			Sleep(1000);
+		}
+	}
 }

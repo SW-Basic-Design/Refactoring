@@ -106,28 +106,10 @@ COORD FrameManager::GetCursorPosition()
 void FrameManager::MakeFrame(std::vector<Object*>& objects)
 {
 	SetCursorPosition({ (short)((objects[0])->GetCoord().getX() * 2), (short)(20 - (objects[0])->GetCoord().getY()) });
-	if (((PlayerCharacter*)objects[0])->isFreeze == true && ((PlayerCharacter*)objects[0])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else if (((PlayerCharacter*)objects[0])->isFreeze == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-	else if (((PlayerCharacter*)objects[0])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
-	Print("¡à");
+	PrintAttackedEffect(objects[0], 10);
 
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
-
-	if (((PlayerCharacter*)objects[1])->isFreeze == true && ((PlayerCharacter*)objects[1])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else if (((PlayerCharacter*)objects[1])->isFreeze == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
-	else if (((PlayerCharacter*)objects[1])->is_attacked == true)
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
-
-	Print("¡à");
+	PrintAttackedEffect(objects[1], 14);
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
@@ -138,7 +120,7 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 		switch ((*it)->GetObjectType())
 		{
 		case ObjectType::WALL:
-			Print("¡Û");
+			Print("â—‹");
 			break;
 		case ObjectType::PARTICLE:
 			if (((Particle*)*it)->isMelee)
@@ -153,154 +135,152 @@ void FrameManager::MakeFrame(std::vector<Object*>& objects)
 				else
 				{
 					if ((*it)->GetVelocity().getX() >= 0)
-						Print("¡¬");
+						Print("ï¼¼");
 					else
-						Print("£¯");
+						Print("ï¼");
 				}
 				break;
 			}
+
 			if (((Particle*)*it)->isShotgun)
 			{
-				Print("¡Å");
-				break;
-			}
-
-			if (((Particle*)*it)->isBombing)
-			{
-				Print("¢Á");
+				Print("âˆ´");
 				break;
 			}
 
 			if (((Particle*)*it)->isHatoken)
 			{
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() >= 0)
-					Print("¡û");
+					Print("âˆ©");
 				else if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() < 0)
 				{
-					Print("¡ú");
+					Print("âˆª");
 				}
 				else if ((*it)->GetVelocity().getX() >= 0)
-					Print("¡ù");
+					Print("âŠƒ");
 				else
-					Print("¡ø");
+					Print("âŠ‚");
 				break;
 			}
 
-			if (((Particle*)*it)->getDamage() <= 5)
+			if (((Particle*)*it)->isLaser)
 			{
-				Print("¡¤");
-			}
-			else if (((Particle*)*it)->getDamage() <= 10)
-			{
-				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
-					Print("¤Ó");
-				else
-					Print("£­");
-			}
-			else
-			{
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
 					Print("|");
 				else
-					Print("¦¡");
+					Print("â”€");
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 			}
+			else
+			{
+				if (((Particle*)*it)->getDamage() <= 5)
+				{
+					Print("Â·");
+				}
+				else if (((Particle*)*it)->getDamage() <= 10)
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("ã…£");
+					else
+						Print("ï¼");
+				}
+				else
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("|");
+					else
+						Print("â”€");
+				}
+			}
+
 			break;
 
 		case ObjectType::DROPPED_SPECIAL_ITEM: case ObjectType::DROPPED_WEAPON:
-			Print("¢Ã");
+			Print("â–£");
 			break;
 
 		case ObjectType::FRIENDLY_NPC:
-			Print("A");
+			PrintAttackedEffect(*it, 15);
 			break;
 
 		case ObjectType::ENEMY_NPC:
-			COORD c = GetCursorPosition();
-
-			for (int i = -1; i <= 1; ++i)
-			{
-				for (int j = -1; j <= 1; ++j)
-				{
-					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
-					Print("E");
-				}
-			}
+			PrintAttackedEffect(*it, 15);
 
 			if (objects[0] == (*it)->getTarget())
 				PrintBossHealth(*it, 0);
 
 			else
 				PrintBossHealth(*it, 1);
+
+			break;
 		}
-
-
 	}
-
-	drawStatus((Character*)objects[0], (Character*)objects[1]);
+	drawStatus((PlayerCharacter*)objects[0], (PlayerCharacter*)objects[1]);
 }
 
-void FrameManager::drawStatus(Character* player1, Character* player2)
+void FrameManager::drawStatus(PlayerCharacter* player1, PlayerCharacter* player2)
 {
 	SetCursorPosition({ 1, 22 });
-	Print("ÇÃ·¹ÀÌ¾î 1");
+	Print("í”Œë ˆì´ì–´ 1");
 	SetCursorPosition({ 1, 23 });
-	Print("³²Àº ¸ñ¼û : ");
+	Print("ë‚¨ì€ ëª©ìˆ¨ : ");
 	Print(std::to_string(player1->life).c_str());
 	SetCursorPosition({ 1, 24 });
-	Print("Ã¼·Â : ");
+	Print("ì²´ë ¥ : ");
 	for (int i = 0; i <= 100; i += 10)
 	{
 		if (player1->getHealth() >= i && player1->getHealth() != 0)
 		{
-			Print("¡á");
+			Print("â– ");
 		}
 		else
 		{
-			Print("¡à");
+			Print("â–¡");
 		}
 	}
 	SetCursorPosition({ 1, 25 });
-	Print("¹«±â : ");
+	Print("ë¬´ê¸° : ");
 	Print(player1->getWeaponName().c_str());
 	SetCursorPosition({ 1, 26 });
-	Print("Åº¾à : ");
+	Print("íƒ„ì•½ : ");
 	Print(std::to_string(player1->bullet_count).c_str());
 	SetCursorPosition({ 1, 27 });
-	Print("»óÅÂ : ");
+	Print("ìƒíƒœ : ");
 	Print(player1->getBuffName().c_str());
+	SetCursorPosition({ 1, 28 });
+	Print((std::to_string(player1->missed_bullet) + " / " + std::to_string(player1->shot_bullet)).c_str());
 
 
 	SetCursorPosition({ 52, 22 });
-	Print("ÇÃ·¹ÀÌ¾î 2");
+	Print("í”Œë ˆì´ì–´ 2");
 	SetCursorPosition({ 52, 23 });
-	Print("³²Àº ¸ñ¼û : ");
+	Print("ë‚¨ì€ ëª©ìˆ¨ : ");
 	Print(std::to_string(player2->life).c_str());
 	SetCursorPosition({ 52, 24 });
-	Print("Ã¼·Â : ");
+	Print("ì²´ë ¥ : ");
 	for (int i = 0; i <= 100; i += 10)
 	{
 		if (player2->getHealth() >= i && player2->getHealth() != 0)
 		{
-			Print("¡á");
+			Print("â– ");
 		}
 		else
 		{
-			Print("¡à");
+			Print("â–¡");
 		}
 	}
 	SetCursorPosition({ 52, 25 });
-	Print("¹«±â : ");
+	Print("ë¬´ê¸° : ");
 	Print(player2->getWeaponName().c_str());
 	SetCursorPosition({ 52, 26 });
-	Print("Åº¾à : ");
+	Print("íƒ„ì•½ : ");
 	Print(std::to_string(player2->bullet_count).c_str());
 	SetCursorPosition({ 52, 27 });
-	Print("»óÅÂ : ");
+	Print("ìƒíƒœ : ");
 	Print(player2->getBuffName().c_str());
-
-
 	SetCursorPosition({ 52, 28 });
-	Print(std::to_string(i++).c_str());
+	Print((std::to_string(player2->missed_bullet) + " / " + std::to_string(player2->shot_bullet)).c_str());
 }
 
 
@@ -312,17 +292,17 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 	else if (objects[0] == dead_player && flag == 1)
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 13);
 	else
-		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
 
 	if (objects[0] == dead_player)
 	{
 		if (flag == 0)
-			Print("¡à");
+			Print("â–¡");
 		else
-			Print("¡á");
+			Print("â– ");
 	}
 	else
-		Print("¡à");
+		Print("â–¡");
 
 
 
@@ -338,12 +318,12 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 	if (objects[1] == dead_player)
 	{
 		if (flag == 0)
-			Print("¡à");
+			Print("â–¡");
 		else
-			Print("¡á");
+			Print("â– ");
 	}
 	else
-		Print("¡à");
+		Print("â–¡");
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
@@ -354,7 +334,7 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 		switch ((*it)->GetObjectType())
 		{
 		case ObjectType::WALL:
-			Print("¡Û");
+			Print("â—‹");
 			break;
 		case ObjectType::PARTICLE:
 			if (((Particle*)*it)->isMelee)
@@ -369,61 +349,68 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 				else
 				{
 					if ((*it)->GetVelocity().getX() >= 0)
-						Print("¡¬");
+						Print("ï¼¼");
 					else
-						Print("£¯");
+						Print("ï¼");
 				}
 				break;
 			}
 			if (((Particle*)*it)->isShotgun)
 			{
-				Print("¡Å");
-				break;
-			}
-
-			if (((Particle*)*it)->isBombing)
-			{
-				Print("¢Á");
+				Print("âˆ´");
 				break;
 			}
 
 			if (((Particle*)*it)->isHatoken)
 			{
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() >= 0)
-					Print("¡û");
+					Print("âˆ©");
 				else if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() < 0)
 				{
-					Print("¡ú");
+					Print("âˆª");
 				}
 				else if ((*it)->GetVelocity().getX() >= 0)
-					Print("¡ù");
+					Print("âŠƒ");
 				else
-					Print("¡ø");
+					Print("âŠ‚");
 				break;
 			}
 
-			if (((Particle*)*it)->getDamage() <= 5)
+			if (((Particle*)*it)->isLaser)
 			{
-				Print("¡¤");
-			}
-			else if (((Particle*)*it)->getDamage() <= 10)
-			{
-				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
-					Print("¤Ó");
-				else
-					Print("£­");
-			}
-			else
-			{
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 				if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
 					Print("|");
 				else
-					Print("¦¡");
+					Print("â”€");
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 			}
+			else
+			{
+				if (((Particle*)*it)->getDamage() <= 5)
+				{
+					Print("Â·");
+				}
+				else if (((Particle*)*it)->getDamage() <= 10)
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("ã…£");
+					else
+						Print("ï¼");
+				}
+				else
+				{
+					if ((*it)->GetVelocity().getX() == 0 && (*it)->GetVelocity().getY() != 0)
+						Print("|");
+					else
+						Print("â”€");
+				}
+			}
+
 			break;
 
 		case ObjectType::DROPPED_SPECIAL_ITEM: case ObjectType::DROPPED_WEAPON:
-			Print("¢Ã");
+			Print("â–£");
 			break;
 
 		case ObjectType::FRIENDLY_NPC:
@@ -433,7 +420,7 @@ void FrameManager::MakeStageOverFrame(std::vector<Object*>& objects, Object* dea
 
 	}
 
-	drawStatus((Character*)objects[0], (Character*)objects[1]);
+	drawStatus((PlayerCharacter*)objects[0], (PlayerCharacter*)objects[1]);
 }
 
 void FrameManager::PrintOutSideWalls()
@@ -448,7 +435,7 @@ void FrameManager::PrintOutSideWalls()
 			if (y != 0 && y != 19 && x != 0 && x != 40)
 				Print(" ");
 			else
-				Print("¡Û");
+				Print("â—‹");
 		}
 	}
 }
@@ -487,13 +474,13 @@ void FrameManager::printDeadPlayerMove(Character* player, int number)
 		Sleep(25);
 
 		this->PrintOutSideWalls();
-		
+
 
 
 		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
-		Print("¡à");
+		Print("â–¡");
 		UpdateFrame();
 
 		pos_x += dx;
@@ -506,7 +493,7 @@ void FrameManager::printDeadPlayerMove(Character* player, int number)
 		SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
 
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
-		Print("¡à");
+		Print("â–¡");
 		UpdateFrame();
 
 		pos_y += dy;
@@ -516,42 +503,42 @@ void FrameManager::printDeadPlayerMove(Character* player, int number)
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡á");
+	Print("â– ");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡à");
+	Print("â–¡");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡á");
+	Print("â– ");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡à");
+	Print("â–¡");
 	UpdateFrame();
 
 	Sleep(100);
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)(pos_x * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡á");
+	Print("â– ");
 	UpdateFrame();
 
 	Sleep(300);
 	PrintOutSideWalls();
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], player_color);
 	SetCursorPosition({ (short)((pos_x) * 2), (short)(19 - (pos_y - 1)) });
-	Print("¡Ú");
+	Print("â˜…");
 	UpdateFrame();
 
 	Sleep(500);
@@ -564,7 +551,7 @@ void FrameManager::printDeadPlayerMove(Character* player, int number)
 			SetCursorPosition({ (short)((pos_x + j) * 2), (short)(19 - (pos_y - 1 + i)) });
 			if ((i != 0 && j != 0) || (i == 0 && j == 0))
 			{
-				Print("¦«");
+				Print("â”¼");
 			}
 
 
@@ -581,7 +568,7 @@ void FrameManager::printDeadPlayerMove(Character* player, int number)
 			SetCursorPosition({ (short)((pos_x + j) * 2), (short)(19 - (pos_y - 1 + i)) });
 			if ((i != 0 && j != 0) || (i == 0 && j == 0))
 			{
-				Print("¡¤");
+				Print("Â·");
 			}
 
 
@@ -640,7 +627,7 @@ void FrameManager::PrintStageOverMassage(int flag)
 					{
 
 					}
-					Print("¡Ü");
+					Print("â—");
 				}
 			}
 		}
@@ -775,7 +762,7 @@ void FrameManager::PrintCountDown(int flag)
 				if ((x > 0 && x < 40) && (y > 0 && y < 19))
 				{
 					SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
-					Print("¡Ü");
+					Print("â—");
 				}
 			}
 		}
@@ -793,11 +780,11 @@ void FrameManager::PrintBossHealth(Object* obj, int index)
 	{
 		if (boss->getHealth() >= i && boss->getHealth() != 0)
 		{
-			Print("¡á");
+			Print("â– ");
 		}
 		else
 		{
-			Print("¡à");
+			Print("â–¡");
 		}
 	}
 }
@@ -834,7 +821,7 @@ void FrameManager::drawGameStart(int flag)
 			SetCursorPosition({ (short)(x * 2), (short)(y + 1) });
 			if (data[y][x] == 1)
 			{
-				Print("¡Ü");
+				Print("â—");
 			}
 		}
 	}
@@ -851,26 +838,26 @@ void FrameManager::drawGameStart(int flag)
 void FrameManager::drawGameStory()
 {
 	string story[20] = {
-		"ÇÃ·¹ÀÌ¾îµéÀº ¿ìÁÖ ¿©ÇàÀ» Áñ±â´Â ¿ìÁÖ ¸ğÇè°¡·Î,",
-		"¿©·¯ ÀºÇÏ¸¦ ´©ºñ¸ç ¸ğÇèÀ» ÇÏ´øÁß",
-		"°­·ÂÇÑ Áß·ÂÀ» Áö´Ñ ºí·¢È¦À» ¸¸³ª",
-		"¼ø½Ä°£¿¡ ±æÀ» ÀÒ°í ¿Ü°è Çà¼º¿¡ ºÒ½ÃÂøÇÕ´Ï´Ù.",
-		"±×¸®°í ±×µéÀº ±×°÷ÀÇ ¾Ë ¼ö ¾ø´Â »ı¸íÃ¼µé¿¡°Ô ³³Ä¡µÇ¾î",
-		"°Å´ëÇÏ°íµµ º¹ÀâÇÑ Åõ±âÀåÀ¸·Î ²ø·Á°©´Ï´Ù.",
+		"í”Œë ˆì´ì–´ë“¤ì€ ìš°ì£¼ ì—¬í–‰ì„ ì¦ê¸°ëŠ” ìš°ì£¼ ëª¨í—˜ê°€ë¡œ,",
+		"ì—¬ëŸ¬ ì€í•˜ë¥¼ ëˆ„ë¹„ë©° ëª¨í—˜ì„ í•˜ë˜ì¤‘",
+		"ê°•ë ¥í•œ ì¤‘ë ¥ì„ ì§€ë‹Œ ë¸”ë™í™€ì„ ë§Œë‚˜",
+		"ìˆœì‹ê°„ì— ê¸¸ì„ ìƒê³  ì™¸ê³„ í–‰ì„±ì— ë¶ˆì‹œì°©í•©ë‹ˆë‹¤.",
+		"ê·¸ë¦¬ê³  ê·¸ë“¤ì€ ê·¸ê³³ì˜ ì•Œ ìˆ˜ ì—†ëŠ” ìƒëª…ì²´ë“¤ì—ê²Œ ë‚©ì¹˜ë˜ì–´",
+		"ê±°ëŒ€í•˜ê³ ë„ ë³µì¡í•œ íˆ¬ê¸°ì¥ìœ¼ë¡œ ëŒë ¤ê°‘ë‹ˆë‹¤.",
 		" ",
-		"¹ÌÁöÀÇ »ı¸íÃ¼µéÀº. ",
-		"\"ÀÌ Åõ±âÀå¿¡¼­ ºüÁ®³ª°¥ ¼ö ÀÖ´Â »ç¶÷Àº ´Ü 1¸íÀÌ¸ç,",
-		"ÆĞ¹èÀÚµéÀº ÀÌ Çà¼ºÀÇ ³ë¿¹·Î¼­",
-		"³²Àº ÀÎ»ıÀ» »ì¾Æ°¡¾ß ÇÑ´Ù\" ¶ó°í ÀÌ¾ß±â ÇÕ´Ï´Ù.",
+		"ë¯¸ì§€ì˜ ìƒëª…ì²´ë“¤ì€. ",
+		"\"ì´ íˆ¬ê¸°ì¥ì—ì„œ ë¹ ì ¸ë‚˜ê°ˆ ìˆ˜ ìˆëŠ” ì‚¬ëŒì€ ë‹¨ 1ëª…ì´ë©°,",
+		"íŒ¨ë°°ìë“¤ì€ ì´ í–‰ì„±ì˜ ë…¸ì˜ˆë¡œì„œ",
+		"ë‚¨ì€ ì¸ìƒì„ ì‚´ì•„ê°€ì•¼ í•œë‹¤\" ë¼ê³  ì´ì•¼ê¸° í•©ë‹ˆë‹¤.",
 		" ",
-		"Åõ±âÀåÀº ´Ù¾çÇÑ È¯°æ°ú µ¶Æ¯ÇÑ ÁöÇüÀ» °¡Áø",
-		"´Ù¼¸ °³ÀÇ Áö¿ªÀ¸·Î ³ª´µ¾îÁ® ÀÖÀ¸¸ç,",
-		"ÇÃ·¹ÀÌ¾îµéÀº Åõ±âÀå °÷°÷¿¡ ÀÖ´Â °¢Á¾ ¹«±â¸¦ ½ÀµæÇØ",
-		"¼­·Î ½Î¿ì°Ô µË´Ï´Ù.",
+		"íˆ¬ê¸°ì¥ì€ ë‹¤ì–‘í•œ í™˜ê²½ê³¼ ë…íŠ¹í•œ ì§€í˜•ì„ ê°€ì§„",
+		"ë‹¤ì„¯ ê°œì˜ ì§€ì—­ìœ¼ë¡œ ë‚˜ë‰˜ì–´ì ¸ ìˆìœ¼ë©°,",
+		"í”Œë ˆì´ì–´ë“¤ì€ íˆ¬ê¸°ì¥ ê³³ê³³ì— ìˆëŠ” ê°ì¢… ë¬´ê¸°ë¥¼ ìŠµë“í•´",
+		"ì„œë¡œ ì‹¸ìš°ê²Œ ë©ë‹ˆë‹¤.",
 		" ",
-		"Áö±İ±îÁö ÇÃ·¹ÀÌ¾îµéÀº ¼­·Î µ¿·á¿´Áö¸¸,",
-		"ÀÌÁ¦´Â °¢ÀÚ ÀÚ±âÀÚ½ÅÀÇ »ıÁ¸À» À§ÇØ Åõ±âÀå¿¡¼­ ½Î¿ö¾ß¸¸ ÇÕ´Ï´Ù.",
-		"±×µéÀÇ Ã³ÀıÇÑ ÀÌ¾ß±â°¡ Áö±İ ¹Ù·Î ½ÃÀÛµË´Ï´Ù." };
+		"ì§€ê¸ˆê¹Œì§€ í”Œë ˆì´ì–´ë“¤ì€ ì„œë¡œ ë™ë£Œì˜€ì§€ë§Œ,",
+		"ì´ì œëŠ” ê°ì ìê¸°ìì‹ ì˜ ìƒì¡´ì„ ìœ„í•´ íˆ¬ê¸°ì¥ì—ì„œ ì‹¸ì›Œì•¼ë§Œ í•©ë‹ˆë‹¤.",
+		"ê·¸ë“¤ì˜ ì²˜ì ˆí•œ ì´ì•¼ê¸°ê°€ ì§€ê¸ˆ ë°”ë¡œ ì‹œì‘ë©ë‹ˆë‹¤." };
 
 
 	int story_length = 20;
@@ -917,12 +904,12 @@ void FrameManager::drawGameStory()
 		if (_kbhit())
 		{
 			c = _getch();
-			
+
 			if (c == VK_RETURN)
 			{
 				return;
 			}
-			
+
 		}
 
 		milli = GetTickCount64();
@@ -932,8 +919,8 @@ void FrameManager::drawGameStory()
 void FrameManager::drawGameModeSelectScreen(bool isPVP)
 {
 	this->PrintOutSideWalls();
-	
-	string str = "°ÔÀÓ ¸ğµå¸¦ ¼±ÅÃÇÏ¼¼¿ä!";
+
+	string str = "ê²Œì„ ëª¨ë“œë¥¼ ì„ íƒí•˜ì„¸ìš”!";
 
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 5 });
 	Print(str.c_str());
@@ -945,7 +932,7 @@ void FrameManager::drawGameModeSelectScreen(bool isPVP)
 		Print(">>");
 	}
 	SetCursorPosition({ (short)(20), 10 });
-	Print("PVE ¸ğµå");
+	Print("PVE ëª¨ë“œ");
 
 	if (isPVP)
 	{
@@ -953,61 +940,61 @@ void FrameManager::drawGameModeSelectScreen(bool isPVP)
 		Print(">>");
 	}
 	SetCursorPosition({ (short)(54), 10 });
-	Print("PVP ¸ğµå");
+	Print("PVP ëª¨ë“œ");
 
 }
 
 void FrameManager::drawHowToControl(bool isPVP)
 {
 	this->PrintOutSideWalls();
-	string str = "ÇÃ·¹ÀÌ¾î 1 Á¶ÀÛ¹ı";
+	string str = "í”Œë ˆì´ì–´ 1 ì¡°ì‘ë²•";
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 3 });
 	Print(str.c_str());
 
-	str = "W, A, S, D : ÁÂ, ¿ì, ¾Æ·¡, À§ ¹æÇâ ÀÌµ¿";
+	str = "W, A, S, D : ì¢Œ, ìš°, ì•„ë˜, ìœ„ ë°©í–¥ ì´ë™";
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 4 });
 	Print(str.c_str());
 
-	str = "G : ¹«±â ¹ß»ç";
+	str = "G : ë¬´ê¸° ë°œì‚¬";
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 5 });
 	Print(str.c_str());
 
 	if (isPVP)
 	{
-		str = "ÇÃ·¹ÀÌ¾î 2 Á¶ÀÛ¹ı";
+		str = "í”Œë ˆì´ì–´ 2 ì¡°ì‘ë²•";
 		SetCursorPosition({ (short)(40 - (str.length() / 2)), 7 });
 		Print(str.c_str());
 
-		str = "°¢ ¹æÇâÅ° : ÁÂ, ¿ì, ¾Æ·¡, À§ ¹æÇâ ÀÌµ¿";
+		str = "ê° ë°©í–¥í‚¤ : ì¢Œ, ìš°, ì•„ë˜, ìœ„ ë°©í–¥ ì´ë™";
 		SetCursorPosition({ (short)(40 - (str.length() / 2)), 8 });
 		Print(str.c_str());
 
-		str = "NUM 5 : ¹«±â ¹ß»ç";
+		str = "NUM 5 : ë¬´ê¸° ë°œì‚¬";
 		SetCursorPosition({ (short)(40 - (str.length() / 2)), 9 });
 		Print(str.c_str());
 	}
 
-	str = "ÇÃ·¹ÀÌ ¹æ¹ı";
+	str = "í”Œë ˆì´ ë°©ë²•";
 	SetCursorPosition({ (short)(40 - (str.length() / 2)), 11 });
 	Print(str.c_str());
 
-	str = "1. ÀÏ¹İ ½ºÅ×ÀÌÁö¿¡¼­ »ó´ë ÇÃ·¹ÀÌ¾î¸¦ °ø°İÇÏ¼¼¿ä.";
+	str = "1. ì¼ë°˜ ìŠ¤í…Œì´ì§€ì—ì„œ ìƒëŒ€ í”Œë ˆì´ì–´ë¥¼ ê³µê²©í•˜ì„¸ìš”.";
 	SetCursorPosition({ (short)(14), 12 });
 	Print(str.c_str());
 
-	str = "- ¸Ê ¹ÛÀ¸·Î ¹Ğ·Á³ª¸é Áï½Ã ¶ó¿îµå¸¦ ÆĞ¹èÇÏ´Ï ÁÖÀÇÇÏ¼¼¿ä!";
+	str = "- ë§µ ë°–ìœ¼ë¡œ ë°€ë ¤ë‚˜ë©´ ì¦‰ì‹œ ë¼ìš´ë“œë¥¼ íŒ¨ë°°í•˜ë‹ˆ ì£¼ì˜í•˜ì„¸ìš”!";
 	SetCursorPosition({ (short)(16), 13 });
 	Print(str.c_str());
 
-	str = "2. ¾ÆÀÌÅÛ »óÀÚ¸¦ È¹µæÇÏ¿© »õ·Î¿î ¹«±â³ª ´É·ÂÀ» ¾òÀ¸¼¼¿ä.";
+	str = "2. ì•„ì´í…œ ìƒìë¥¼ íšë“í•˜ì—¬ ìƒˆë¡œìš´ ë¬´ê¸°ë‚˜ ëŠ¥ë ¥ì„ ì–»ìœ¼ì„¸ìš”.";
 	SetCursorPosition({ (short)(14), 14 });
 	Print(str.c_str());
 
-	str = "3. º¸½º¸¦ ¸ÕÀú Ã³Ä¡ÇÏ¿© Æ¯¼ö ¾ÆÀÌÅÛÀ» È¹µæÇÏ¼¼¿ä.";
+	str = "3. ë³´ìŠ¤ë¥¼ ë¨¼ì € ì²˜ì¹˜í•˜ì—¬ íŠ¹ìˆ˜ ì•„ì´í…œì„ íšë“í•˜ì„¸ìš”.";
 	SetCursorPosition({ (short)(14), 15 });
 	Print(str.c_str());
 
-	str = "4. »ó´ë ÇÃ·¹ÀÌ¾îÀÇ ¸ñ¼ûÀ» ¸ÕÀú ¼ÒÁø½ÃÄÑ ½Â¸®¸¦ ÀïÃëÇÏ¼¼¿ä.";
+	str = "4. ìƒëŒ€ í”Œë ˆì´ì–´ì˜ ëª©ìˆ¨ì„ ë¨¼ì € ì†Œì§„ì‹œì¼œ ìŠ¹ë¦¬ë¥¼ ìŸì·¨í•˜ì„¸ìš”.";
 	SetCursorPosition({ (short)(14), 16 });
 	Print(str.c_str());
 
@@ -1030,7 +1017,7 @@ void FrameManager::MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
 	else
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 10);
-	Print("¡à");
+	Print("â–¡");
 
 	SetCursorPosition({ (short)((objects[1])->GetCoord().getX() * 2), (short)(20 - (objects[1])->GetCoord().getY()) });
 
@@ -1043,7 +1030,7 @@ void FrameManager::MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead
 	else
 		SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 14);
 
-	Print("¡à");
+	Print("â–¡");
 
 	SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 
@@ -1054,7 +1041,7 @@ void FrameManager::MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead
 		switch ((*it)->GetObjectType())
 		{
 		case ObjectType::WALL:
-			Print("¡Û");
+			Print("â—‹");
 			break;
 
 		case ObjectType::ENEMY_NPC:
@@ -1070,7 +1057,7 @@ void FrameManager::MakeBossDeadFrame(std::vector<Object*>& objects, Object* dead
 					continue;
 				}
 			}
-				
+
 
 			COORD c = GetCursorPosition();
 
@@ -1136,7 +1123,7 @@ void FrameManager::drawGameOverScene(int winner_id, int flag)
 	{0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0},
 	{0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1,0,0,1,0,1,0,0,0,1,1,1,0,0,1,0,0,0,1,0,0,1,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-	}	};
+	} };
 
 	for (int y = 0; y < 20; y++)
 	{
@@ -1155,10 +1142,80 @@ void FrameManager::drawGameOverScene(int winner_id, int flag)
 					SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
 				}
 
-				Print("¡Ü");
+				Print("â—");
 			}
 		}
 	}
 
+	void FrameManager::PrintAttackedEffect(Object * obj, int color_code)
+	{
+		switch (obj->GetObjectType())
+		{
+		case ObjectType::PLAYER_CHARACTER:
+			if (((PlayerCharacter*)obj)->isFreeze == true && ((PlayerCharacter*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else if (((PlayerCharacter*)obj)->isFreeze == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+			else if (((PlayerCharacter*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], color_code);
 
+			Print("â–¡");
+			break;
+		case ObjectType::ENEMY_NPC:
+			COORD c = GetCursorPosition();
+			if (((EnemyNPC*)obj)->isFreeze == true && ((EnemyNPC*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else if (((EnemyNPC*)obj)->isFreeze == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+			else if (((EnemyNPC*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+
+			for (int i = -1; i <= 1; ++i)
+			{
+				for (int j = -1; j <= 1; ++j)
+				{
+					SetCursorPosition(COORD{ (short)(c.X + i * 2), (short)(c.Y + j) });
+					if (i == -1 && j == -1)
+						Print("â”Œ");
+					if (i == -1 && j == 0)
+						Print("â”œ");
+					if (i == -1 && j == 1)
+						Print("â””");
+					if (i == 0 && j == -1)
+						Print("â”¬");
+					if (i == 0 && j == 0)
+						Print("âŠ™");
+					if (i == 0 && j == 1)
+						Print("â”´");
+					if (i == 1 && j == -1)
+						Print("â”");
+					if (i == 1 && j == 0)
+						Print("â”¤");
+					if (i == 1 && j == 1)
+						Print("â”˜");
+				}
+			}
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			break;
+		case ObjectType::FRIENDLY_NPC:
+			if (((FriendlyNPC*)obj)->isFreeze == true && ((FriendlyNPC*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else if (((FriendlyNPC*)obj)->isFreeze == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 9);
+			else if (((FriendlyNPC*)obj)->is_attacked == true)
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 12);
+			else
+				SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], color_code);
+
+			Print("â—ˆ");
+			SetConsoleTextAttribute(this->frame.bufferHandler[this->frame.currentBufferIndex], 15);
+			break;
+		default:
+			break;
+		}
+	}
 }

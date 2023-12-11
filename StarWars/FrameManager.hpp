@@ -5,6 +5,7 @@
 #include "PlayerCharacter.hpp"
 #include "Particle.hpp"
 #include "EnemyNPC.hpp"
+#include "FriendlyNPC.hpp"
 #include <string>
 
 #ifndef FRAME_MANAGER_HPP
@@ -36,6 +37,7 @@ public:
 	void drawGameModeSelectScreen(bool isPVP);
 	void drawHowToControl(bool isPVP);
 	void drawGameOverScene(int winner_id, int flag);
+	void PrintAttackedEffect(Object*, int);
 private:
 	Frame frame;
 	int i = 0;

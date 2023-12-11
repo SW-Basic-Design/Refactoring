@@ -26,14 +26,18 @@ public:
 	Vec2 SetItemCoord();
 	bool IsGameOver();
 	bool IsStageOver();
+	bool IsBossStage();
 	void SetGameOver(bool);
 	void SetStageOver(bool);
+	void SetIsBossStage(bool);
 	void UpdateObjectNextPosition();
 	void UpdateSingleObjectNextPosition(Object*);
 	void UpdateObjectPosition();
 	void UpdateObjects();
 	void UpdateMap();
 	void SummonBoss();
+	void doSomethingStupid(Character*);
+	bool PathExists(Object* ai, Object* target);
 	int shortestPathBinaryMatrix(Object* ai, Object* enemy, Vec2 way);
 	void getShortestWay(Object* start, Object* target);
 	Object * getGameOverPlayer();
@@ -44,10 +48,11 @@ public:
 	void CharacterShoot(Character* player);
 	std::vector<Object*>& GetObjects();
 	bool shouldShoot(Object* ai);
+	void adjustDifficulty();
 	const int WIDTH = 41;
 	const int HEIGHT = 20;
 	const int SPECIAL_ITEM_COUNT = 4;
-	const int WEAPON_COUNT = 7;
+	const int WEAPON_COUNT = 8;
 	int current_stage = 0;
 	const int map[9][20][41] = {
 		{
@@ -256,6 +261,8 @@ public:
 private:
 	bool gameOver;
 	bool stageOver;
+	int difficulty = 50;
+	bool isBossStage = false;
 	std::vector<Object*> objects;
 };
 

@@ -16,7 +16,7 @@ public:
 	int current_range;
 	bool isMelee;
 	bool isShotgun;
-	bool isBombing;
+	bool isLaser;
 	bool isHatoken;
 	Vec2 bullet_direction = { 0, 0 };
 private:

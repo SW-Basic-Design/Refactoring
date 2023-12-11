@@ -39,6 +39,8 @@ public:
 	std::string getBuffName();
 	bool IsAI();
 	void setAI(bool);
+	int shot_bullet = 0;
+	int missed_bullet = 0;
 protected:
 	int speed;
 	int health;

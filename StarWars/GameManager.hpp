@@ -22,7 +22,7 @@ public:
 	void resetStage();
 	void removeAllComponents();
 	void gotoNextStage();
-	void makeNormalStage();
+	void makeNormalStage(int);
 	void makeBossStage();
 	void waitForStart();
 	void showGameStory();
@@ -31,6 +31,7 @@ public:
 	void showCountDown();
 	void showBossEliminated();
 	void showGameOver();
+	void countDown();
 	long long int last_item_SpawnTime;
 	const static int spawn_term = 15000;
 

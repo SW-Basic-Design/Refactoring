@@ -23,19 +23,22 @@ int DroppedWeapon::getDamage(int weapon_id)
 		return 5;
 
 	case 2://rifle
-		return 8;
+		return 7;
 
 	case 3://sword
 		return 15;
 
 	case 4://shotgun
-		return 5;
+		return 15;
 
 	case 5://sniper
 		return 20;
 
 	case 6://Hatoken
 		return 10;
+
+	case 7:
+		return 1;
 
 	case 99://Ai weapon
 		return 3;
@@ -68,6 +71,9 @@ int DroppedWeapon::getSpeed(int weapon_id)
 	case 6:
 		return 30;
 
+	case 7:
+		return 20;
+
 	case 99://Ai Weapon
 		return 50;
 
@@ -84,7 +90,7 @@ int DroppedWeapon::getBulletCount(int weapon_id)
 		return 20;
 
 	case 2://rifle
-		return 60;
+		return 30;
 
 	case 3://sword
 		return 10;
@@ -97,6 +103,9 @@ int DroppedWeapon::getBulletCount(int weapon_id)
 
 	case 6://Hatoken
 		return 10;
+
+	case 7:
+		return 100;
 
 	case 99:
 		return MAXINT;
@@ -127,6 +136,9 @@ int DroppedWeapon::getRPM(int weapon_id)
 	case 6://Hatoken 
 		return 5;
 
+	case 7:
+		return 15;
+
 	case 99://Ai Weapon
 		return 2;
 
@@ -143,7 +155,7 @@ int DroppedWeapon::getMaxRange(int weapon_id)
 		return 10;
 
 	case 2://rifle
-		return  20;
+		return 20;
 
 	case 3: // sword
 		return 2;
@@ -156,6 +168,9 @@ int DroppedWeapon::getMaxRange(int weapon_id)
 
 	case 6://Hatoken
 		return 10;
+
+	case 7:
+		return 8;
 
 	case 99:
 		return 15;

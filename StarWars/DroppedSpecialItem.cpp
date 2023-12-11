@@ -22,8 +22,8 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 
 
 	random_device rd;
-	mt19937 gen(rd());
-	uniform_int_distribution<> dist(1, 20);
+	mt19937 generate(rd());
+	uniform_int_distribution<> XCoord(1, 39), YCoord(1, 18), SetWay(1, 4);
 
 	switch (special_item_id)
 	{
@@ -32,7 +32,7 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 1:
-		player->setBuffTimer(2000);
+		player->setBuffTimer(5000);
 		player->SetSpeed((double)player->getOriginalSpeed() * 1.5);
 		player->current_buff = 1;
 		player->buff_start = milli;
@@ -46,38 +46,41 @@ void DroppedSpecialItem::useItem(Object* user_1, Object* user_2, vector< Object*
 		break;
 
 	case 3:
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 20; i++)
 		{
-			Particle* bullet = new Particle();
-			bullet->isBombing = true;
-			bullet->isMelee = false;
-			bullet->shooter = user_1;
-			bullet->SetSpeed(1);
-			bullet->setDamage(5);
-			bullet->max_range = 50;
-			bullet->SetCoord({ dist(gen), 19 });
-			bullet->SetNextCoord(bullet->GetCoord() + Vec2{ 1, -1 });
-			bullet->SetVelocity(Vec2{ 1, -1 });
+			int Way = SetWay(generate);
+			Particle* laser = new Particle();
+			laser->isLaser = true;
+			laser->SetSpeed(15);
+			laser->setDamage(10);
+			laser->max_range = 50;
 
-			objects.push_back(bullet);
+			if (Way == 1) 
+			{
+				laser->SetCoord({ XCoord(generate), 19 });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 0, -1 });
+				laser->SetVelocity(Vec2{ 0, -1 });
+			}
+			if (Way == 2)
+			{
+				laser->SetCoord({ XCoord(generate), 1 });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 0, 1 });
+				laser->SetVelocity(Vec2{ 0, 1 });
+			}
+			if (Way == 3)
+			{
+				laser->SetCoord({ 1, YCoord(generate) });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ 1, 0 });
+				laser->SetVelocity(Vec2{ 1, 0 });
+			}
+			if (Way == 4)
+			{
+				laser->SetCoord({ 39, YCoord(generate) });
+				laser->SetNextCoord(laser->GetCoord() + Vec2{ -1, 0 });
+				laser->SetVelocity(Vec2{ -1, 0 });
+			}
+			objects.push_back(laser);
 		}
-
-		for (int i = 0; i < 10; i++)
-		{
-			Particle* p = new Particle();
-			p->isBombing = true;
-
-			p->shooter = user_1;
-			p->SetSpeed(1);
-			p->setDamage(5);
-			p->max_range = 50;
-			p->SetCoord({ dist(gen) + 20, 19 });
-			p->SetNextCoord(p->GetCoord() + Vec2{ -1, -1 });
-			p->SetVelocity(Vec2{ -1, -1 });
-
-			objects.push_back(p);
-		}
-
 		break;
 
 	case 911:
